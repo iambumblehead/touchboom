@@ -1,0 +1,18 @@
+{
+  "name": "touchboom",
+  "main": "touchboom",
+  "version": "0.0.1",
+  "readmeFilename": "README.md",
+  "license" : "MIT",
+  "description": "Report touch/mouse events from the document",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iambumblehead/touchboom.git"
+  },
+  "keywords": [
+    "touch",
+    "mouse",
+    "tap",
+    "doubleclick"
+  ]
+}
