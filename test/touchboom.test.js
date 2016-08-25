@@ -1,13 +1,21 @@
+// Filename: touchboom.test.js  
+// Timestamp: 2016.08.24-13:00:57 (last modified)
+// Author(s): bumblehead <chris@bumblehead.com>  
 
 function addcommonjsmodule () {
   window.module = window.module || {exports : {}};
+  window.require = name => window[name];
 }
 
 function gettouchboom (fn) {
   addcommonjsmodule();
 
-  document.body.appendChild(gettouchboomscriptelem(function () {
-    fn(null, window.touchboom);
+  document.body.appendChild(getscriptelem('../node_modules/curved/curved.js', function () {
+    document.body.appendChild(getscriptelem('../touchboom.js', function () {    
+      document.body.appendChild(getscriptelem('../touchboom_key.js', function () {
+        fn(null, window.touchboom, window.touchboom_key);
+      }));
+    }));
   }));
 }
 
@@ -27,9 +35,9 @@ function getcanvaselem (cfg) {
   return canvaselem;
 }
 
-function gettouchboomscriptelem (fn) {
+function getscriptelem (src, fn) {
   var script = document.createElement('script');
-  script.src = '../touchboom.js';
+  script.src = src;
   script.async = false;
   script.onload = function () {
     fn(null);
@@ -92,11 +100,16 @@ function paintballconnect (cfg, canvas) {
 
   rootelem.appendChild(canvas2Delem);
   
-  gettouchboom(function (err, touchboom) {
+  gettouchboom(function (err, touchboom, touchboom_key) {
 
     cfg = paintballconnect(cfg, canvas2Delem);
 
-    touchboom(cfg, rootelem, function (cfg, etype, e) {
+    cfg = Object.assign({}, cfg, {
+      minxy : [-canvas2Delem.width/2 + 100, -canvas2Delem.height/2 + 100],
+      maxxy : [canvas2Delem.width/2 - 100, canvas2Delem.height/2 - 100]
+    });
+
+    cfg = touchboom(cfg, rootelem, function (cfg, etype, e) {
       if (etype === 'interrupt' ||
           etype === 'moveend') {
         cfg.centerxy = getcentermousexy(cfg, cfg.boomstepsxy);
@@ -121,9 +134,15 @@ function paintballconnect (cfg, canvas) {
       }
     });
 
+    cfg = touchboom_key(cfg, rootelem, function (cfg, etype, e) {
+      if (cfg.boomismove && cfg.boomkeydownts) {
+        console.log('key down');
+      }
+    });
+
     (function animate () {
-      if (cfg.boomismove) {
-        paintballrender(cfg, getcentermousexy(cfg, cfg.boomstepsxy), canvas2Delem);
+      if (touchboom.ismove(cfg)) {
+        paintballrender(cfg, getcentermousexy(cfg, touchboom_key.getstepsxy(cfg, Date.now())), canvas2Delem);
       }
       
       requestAnimationFrame(animate);
