@@ -6,7 +6,7 @@ Reports inertial movement and key/touch/mouse events from the document. A rework
 
 All handlers connect to the same data, so that mouse-originated glide motions continue alongside key-originated glide motions. One set of listeners are attached to the body from which all events are delegated so that behaviour may be bound many times.
 
-Run npm test and load the [test page](./touchboom.test.js) to see a demo.
+Run npm test and load the [test page][8] to see a demo.
 
 ```javascript
 //
@@ -61,6 +61,7 @@ touchboom.attach(cfg, rootelem, {
 
 [0]: http://www.bumblehead.com                            "bumblehead"
 [7]: https://github.com/ariya/kinetic/                       "kinetic"
+[8]: https://github.com/iambumblehead/touchboom/blob/master/touchboom.test.js "test page"
 
 
 ![scrounge](https://github.com/iambumblehead/scroungejs/raw/master/img/hand.png)[![es5 classic][7]][7] 
