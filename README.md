@@ -1,30 +1,66 @@
 touchboom
 =========
-**(c)[Bumblehead][0], 2016** [MIT-license](#license)
+[MIT-license](#license)
 
-Report touch/mouse events from the document.
+Reports inertial movement and key/touch/mouse events from the document. A reworking of the [motion scripts found here][7], courtesy of Ariya Hidayat.
+
+All handlers connect to the same data, so that mouse-originated glide motions continue alongside key-originated glide motions. One set of listeners are attached to the body from which all events are delegated so that behaviour may be bound many times.
+
+Run npm test and load the [test page](./touchboom.test.js) to see a demo.
 
 ```javascript
-var state = {};
+//
+// state is defined and mutated on cfg
+//
+let cfg = {};
 
-touchboom(state, rootelem, function (state, etype, e) {
-  if (etype === 'end') {
-    'mouseup or touchend';
-    if (state.boomistap) {
-      'is tapped';
+//
+// start coords = [ xcoord, ycoord ]
+// all properties are optional
+// 
+cfg.coords = touchboom.coords([{
+  bgn : 0
+}, {
+  autoweight : 10,
+  bgn : 0,
+  min : -400,
+  max : 400
+}]);
+
+//
+// target element must have id, used to manage delegation
+// one set of listeners are attached body and delegated
+// to touchboom functions assocated w/ element
+//
+rootelem.id = 'id-is-required';
+
+//
+// all event functions are optional,
+//
+//  * oneventfn, called when an event occurs
+//    'bgn', 'start', 'end', 'move', 'moveend', 'tap', 'cancel', 'over'
+//
+//  * oninertiafn, called on each 'frame' of movement before and after
+//    touch/mouse release
+//
+//  * onmovefn, called when mouse is over element
+//
+touchboom.attach(cfg, rootelem, {
+  oneventfn : function (cfg, etype, e) {
+    if (etype === 'moveend') {
+      // coords stopped moving
+    } else if (etype === 'end') {
+      // mouse or finger are disengaged
     }
-  } else if (etype === 'cancel') {
-    'mouseout or touchcancel';
-  } else if (etype === 'start') {
-    'mousedown or touchstart';
-  } else if (etype === 'move') {
-    'mousemove or touchmove';
+  },
+  oninertiafn : function (cfg, etype, e) {
+    // coordinates are updated
   }
 });
 ```
 
 [0]: http://www.bumblehead.com                            "bumblehead"
-[7]: https://raw.githubusercontent.com/iambumblehead/es5classic/master/es5classic_120x120.png
+[7]: https://github.com/ariya/kinetic/                       "kinetic"
 
 
 ![scrounge](https://github.com/iambumblehead/scroungejs/raw/master/img/hand.png)[![es5 classic][7]][7] 

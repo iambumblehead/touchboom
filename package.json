@@ -1,7 +1,7 @@
 {
   "name": "touchboom",
-  "main": "touchboom",
-  "version": "0.0.1",
+  "main": "src/touchboom",
+  "version": "0.1.0",
   "readmeFilename": "README.md",
   "license" : "MIT",
   "description": "Report touch/mouse events from the document",
@@ -11,11 +11,14 @@
   },
   "dependencies" : {
     "curved": "0.0.7",
-    "jasmine-node": "~1.14.x"
+    "domev": "0.0.7"
   },
-  "scripts": {
-    "test": "node node_modules/jasmine-node/bin/jasmine-node --verbose test/"
-  },  
+  "devDependencies" : {
+    "scroungejs": "^1.2.1"
+  },
+  "scripts" : {
+    "test": "node test/build.js"
+  },
   "keywords": [
     "touch",
     "mouse",
