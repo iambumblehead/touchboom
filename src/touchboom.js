@@ -1,5 +1,5 @@
 // Filename: touchboom.js  
-// Timestamp: 2017.05.06-00:15:16 (last modified)
+// Timestamp: 2017.07.02-03:30:39 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>  
 
 const touchboom_ctrl = require('./touchboom_ctrl'),
@@ -25,9 +25,14 @@ const touchboom = module.exports = (o => {
   };
 
   o.key = touchboom_key;
+  o.keyevents = touchboom_key.events;
+  o.keygetdirection = touchboom_key.getdirection;
+  
   o.touchmouse = touchboom_touchmouse;
+  o.istaptapvalid = touchboom_touchmouse.istaptapvalid;
   o.getevxy = touchboom_touchmouse.getevxy;
   o.getevxyrelativeelem = touchboom_touchmouse.getevxyrelativeelem;
+
   
   o.coordsgettotal = touchboom_ctrl.coordsgettotal;
   o.coordsmoveend = touchboom_ctrl.coordsmoveend;

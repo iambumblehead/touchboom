@@ -1,5 +1,5 @@
 // Filename: touchboom_key.js  
-// Timestamp: 2017.03.24-22:41:00 (last modified)
+// Timestamp: 2017.07.02-01:31:29 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>  
 
 const domev = require('domev'),
@@ -13,10 +13,19 @@ const touchboom_key = module.exports = (o => {
   const DIR_LEFT  = 'DIR_LEFT',
         DIR_RIGHT = 'DIR_RIGHT',
         DIR_DOWN  = 'DIR_DOWN',
-        DIR_UP    = 'DIR_UP';  
+        DIR_UP    = 'DIR_UP';
+
+  const {
+    INTERRUPT,
+    KEYSTART, KEYEND
+  } = touchboom_ctrl.events;
 
   o = (cfg, parentelem, fn) =>
     o.connectdelegate(cfg, parentelem, fn);
+
+  o.events = {
+    DIR_LEFT, DIR_RIGHT, DIR_DOWN, DIR_UP
+  };
 
   o.getdirection = (cfg, keyCode) => {
     var dir = null;
@@ -61,7 +70,7 @@ const touchboom_key = module.exports = (o => {
         });
 
         cfg.coords[axisnum] = coord;
-        cfg = touchboom_ev.publish(cfg, 'interrupt', e);
+        cfg = touchboom_ev.publish(cfg, INTERRUPT, e);
       }
       coord.isupdatepassive = true;
       coord = touchboom_ctrl.coordget(coord, {
@@ -73,7 +82,7 @@ const touchboom_key = module.exports = (o => {
       coord.dir = dirnum;
       cfg.coords[axisnum] = coord;
           
-      cfg = touchboom_ev.publish(cfg, 'start', e);
+      cfg = touchboom_ev.publish(cfg, KEYSTART, e);
       touchboom_ctrl.start(cfg, e);
     }
   };
@@ -90,6 +99,8 @@ const touchboom_key = module.exports = (o => {
       cfg = touchboom_ctrl.stop(cfg);
       cfg.coords[axisnum] = touchboom_ctrl.coordmoveend(cfg, coord);
       touchboom_ctrl.coordsmoveend(cfg, e, coord);
+
+      cfg = touchboom_ev.publish(cfg, KEYEND, e);
     }
   };
 

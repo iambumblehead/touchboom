@@ -1,5 +1,5 @@
 // Filename: touchboom_ctrl.js  
-// Timestamp: 2017.04.21-17:18:53 (last modified)
+// Timestamp: 2017.07.02-02:26:50 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>  
 //
 // http://ariya.github.io/kinetic/
@@ -38,6 +38,19 @@ const touchboom_ctrl = module.exports = (o => {
 
     return cfg;
   };
+
+  o.events = {
+    INTERRUPT : 'interrupt',
+    CANCEL    : 'cancel',
+    KEYSTART  : 'keystart',
+    KEYEND    : 'keyend',
+    MOVE      : 'move',
+    OVER      : 'over',
+    START     : 'start',
+    END       : 'end',
+    TAP       : 'tap',
+    TAPTAP    : 'taptap'
+  },
 
   o.onmoveend = (cfg, id, fn) => (
     cfg.onmoveendfn = cfg.onmoveendfn || {},

@@ -1,5 +1,5 @@
 // Filename: touchboom_touchmouse.js  
-// Timestamp: 2017.05.23-01:38:30 (last modified)
+// Timestamp: 2017.07.02-13:37:50 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>  
 
 const domev = require('domev'),
@@ -12,7 +12,13 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
   const TYPE = 'touchmouse',
         TAPTIMETHRESHOLD    = 200,
         TAPTAPTIMETHRESHOLD = 200,
+        //TAPTAPTIMETHRESHOLD = 600,
         TAPMOVETHRESHOLD    = 10;
+
+  const {
+    INTERRUPT, CANCEL, MOVE, OVER,
+    START, END, TAP, TAPTAP
+  } = touchboom_ctrl.events;
 
   o = (cfg, touchboom_ctrl, parentelem, fn) => 
     o.connectdelegate(cfg, touchboom_ctrl, parentelem, fn);
@@ -71,7 +77,7 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
           offset : 0
         })));
       
-      cfg = touchboom_ev.publish(cfg, 'interrupt', e);
+      cfg = touchboom_ev.publish(cfg, INTERRUPT, e);
     }
 
     cfg.istap = false;
@@ -82,14 +88,14 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
       type : TYPE
     }));
 
-    cfg = touchboom_ev.publish(cfg, 'start', e);
+    cfg = touchboom_ev.publish(cfg, START, e);
     touchboom_ctrl.start(cfg, e);
   };
 
   o.move = (cfg, touchboom_ctrl, e) => {
     let evarr = o.getevxy(e);    
 
-    cfg = touchboom_ev.publish(cfg, 'move', e);
+    cfg = touchboom_ev.publish(cfg, MOVE, e);
 
     cfg.coords = cfg.coords.map((c, i) => (
       c.type == TYPE && (c.ismove && !c.isglide)
@@ -98,21 +104,37 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
 
   o.over = (cfg, touchboom_ctrl, e) => {
     if (cfg.onoverfn) {
-      cfg = cfg.onoverfn(cfg, 'over', e);
+      cfg = cfg.onoverfn(cfg, OVER, e);
     }
-  };  
+  };
 
+  // taps must occur near one another, when user is not updating movement.
+  //
+  //  - previous touch/tap must have been released
+  //  - must be not-moving OR if moving must be gliding (user disengaged)
+  //
+  // prevents multiple, separated -touch/click
+  o.istaptapvalid = cfg => 
+    cfg.coords.every(c => !c.ismove || c.isglide) &&
+    (touchboom_ctrl
+     .coordsgettotal(cfg)
+     .every(coordtotal => coordtotal < 20));
+  
   o.movecomplete = (cfg, touchboom_ctrl, e) => {
     if (!touchboom_ctrl.coordsismove(cfg)) {
-      cfg.publishfn(cfg, 'end', e);
+      cfg.publishfn(cfg, END, e);
       return touchboom_ctrl.stop(cfg);
     }
 
     if (/touchend|mouseup/.test(e.type)) {
       cfg = o.endtap(cfg, e);
       if (cfg.istap) {
-        cfg.publishfn(cfg, 'tap', e);
+        cfg.publishfn(cfg, TAP, e);
       }
+
+      if (cfg.istaptap && o.istaptapvalid(cfg)) {
+        cfg.publishfn(cfg, TAPTAP, e);
+      }      
     }
 
     if (e.type === 'mouseout' &&
@@ -120,7 +142,7 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
       return null;
     }
 
-    cfg.publishfn(cfg, 'end', e);
+    cfg.publishfn(cfg, END, e);
 
     cfg.coords = cfg.coords.map(c => (
       c = touchboom_ctrl.coordupdate(cfg, c),
@@ -131,7 +153,7 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
   };
 
   o.movecancel = (cfg, touchboom_ctrl, e) => {
-    cfg = touchboom_ev.publish(cfg, 'cancel', e);
+    cfg = touchboom_ev.publish(cfg, CANCEL, e);
 
     cfg.coords = cfg.coords.map(c => (
       touchboom_ctrl.coordset(c, {
@@ -210,8 +232,6 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
             statemeta = delegatorstate && ctrldel.getstatemeta(delegatorstate);
 
         if (delegatorstate) {
-          e.preventDefault();
-          
           o.delegator = ctrldel.setmouseoverstate(o.delegator, delegatorstate);
           o.delegator = ctrldel.setactivestate(o.delegator, delegatorstate);
 
