@@ -72,7 +72,8 @@ const touchboom_key = module.exports = (o => {
       coord.lastdelta = 0;
       coord.dir = dirnum;
       cfg.coords[axisnum] = coord;
-
+          
+      cfg = touchboom_ev.publish(cfg, 'start', e);
       touchboom_ctrl.start(cfg, e);
     }
   };
