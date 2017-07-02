@@ -1,5 +1,5 @@
 // Filename: touchboom.js  
-// Timestamp: 2017.07.02-03:30:39 (last modified)
+// Timestamp: 2017.07.02-15:56:11 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>  
 
 const touchboom_ctrl = require('./touchboom_ctrl'),
@@ -37,7 +37,8 @@ const touchboom = module.exports = (o => {
   o.coordsgettotal = touchboom_ctrl.coordsgettotal;
   o.coordsmoveend = touchboom_ctrl.coordsmoveend;
   o.coordsismove = touchboom_ctrl.coordsismove;
-  o.coords = touchboom_ctrl.coords;  
+  o.coords = touchboom_ctrl.coords;
+  o.coordsreset = touchboom_ctrl.coordsreset;
 
   return o;
   

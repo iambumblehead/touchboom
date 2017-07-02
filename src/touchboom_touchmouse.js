@@ -1,5 +1,5 @@
 // Filename: touchboom_touchmouse.js  
-// Timestamp: 2017.07.02-13:37:50 (last modified)
+// Timestamp: 2017.07.02-16:10:49 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>  
 
 const domev = require('domev'),
@@ -155,7 +155,7 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
   o.movecancel = (cfg, touchboom_ctrl, e) => {
     cfg = touchboom_ev.publish(cfg, CANCEL, e);
 
-    cfg.coords = cfg.coords.map(c => (
+    cfg.coords = cfg.coords && cfg.coords.map(c => (
       touchboom_ctrl.coordset(c, {
         offset : 0
       })));
