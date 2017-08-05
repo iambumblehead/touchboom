@@ -1,5 +1,5 @@
 // Filename: touchboom_ctrl.js  
-// Timestamp: 2017.07.02-02:26:50 (last modified)
+// Timestamp: 2017.08.05-16:27:49 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>  
 //
 // http://ariya.github.io/kinetic/
@@ -22,7 +22,7 @@
 const touchboom_ev = require('./touchboom_ev'),
       curved = require('curved');
 
-const touchboom_ctrl = module.exports = (o => {
+module.exports = (o => {
 
   const VELOCITYTHRESHOLD = 10,
         TIMECONST = 325,
@@ -74,7 +74,7 @@ const touchboom_ctrl = module.exports = (o => {
       cfg.onmovefn(cfg, e);
     } catch (e) {
       o.stop(cfg);
-      throw new Error(e);
+      console.error('[!!!] onmove', e);
     }    
   };
 

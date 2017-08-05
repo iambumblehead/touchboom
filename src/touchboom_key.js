@@ -1,5 +1,5 @@
 // Filename: touchboom_key.js  
-// Timestamp: 2017.07.02-01:31:29 (last modified)
+// Timestamp: 2017.08.05-16:32:00 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>  
 
 const domev = require('domev'),
@@ -56,6 +56,7 @@ const touchboom_key = module.exports = (o => {
     -Number(dir === DIR_LEFT || dir === DIR_UP);
 
   o.keydown = (cfg, touchboom_ctrl, e) => {
+    console.log('keycode, key', e.keyCode, e.code);
     let dir = o.getdirection(cfg, e.keyCode),
         axisnum = o.getdirectionxynum(cfg, dir),
         dirnum = o.getdirectiondirnum(cfg, dir),

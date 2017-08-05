@@ -1,12 +1,12 @@
 // Filename: touchboom.js  
-// Timestamp: 2017.07.02-15:56:11 (last modified)
+// Timestamp: 2017.08.05-16:27:04 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>  
 
 const touchboom_ctrl = require('./touchboom_ctrl'),
       touchboom_key = require('./touchboom_key'),
       touchboom_touchmouse = require('./touchboom_touchmouse');
 
-const touchboom = module.exports = (o => {
+module.exports = (o => {
 
   o.attach = (rafcfg, elem, fnobj) => {
     let slugfn = x => {},

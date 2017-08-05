@@ -6,6 +6,8 @@ Reports inertial movement and key/touch/mouse events from the document. A rework
 
 All handlers connect to the same data, so that mouse-originated glide motions continue alongside key-originated glide motions. One set of listeners are attached to the body from which all events are delegated so that behaviour may be bound many times.
 
+Touchboom uses the legacy property [event.keyCode][9] with keyboard up, down, left, right, wasd events.
+
 Run npm test and load the [test page][8] to see a demo.
 
 ```javascript
@@ -49,12 +51,15 @@ touchboom.attach(cfg, rootelem, {
   oneventfn : function (cfg, etype, e) {
     if (etype === 'moveend') {
       // coords stopped moving
+      console.log(touchboom.coordsgettotal(cfg));
     } else if (etype === 'end') {
       // mouse or finger are disengaged
+      console.log(touchboom.coordsgettotal(cfg));
     }
   },
   oninertiafn : function (cfg, etype, e) {
-    // coordinates are updated
+      // coordinates are updated
+      console.log(touchboom.coordsgettotal(cfg));
   }
 });
 ```
@@ -62,6 +67,7 @@ touchboom.attach(cfg, rootelem, {
 [0]: http://www.bumblehead.com                            "bumblehead"
 [7]: https://github.com/ariya/kinetic/                       "kinetic"
 [8]: https://github.com/iambumblehead/touchboom/blob/master/touchboom.test.js "test page"
+[9]: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode#Browser_compatibility
 
 
 ![scrounge](https://github.com/iambumblehead/scroungejs/raw/master/img/hand.png)[![es5 classic][7]][7] 
