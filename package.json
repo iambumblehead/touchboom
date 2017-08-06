@@ -1,6 +1,6 @@
 {
   "name": "touchboom",
-  "main": "src/touchboom",
+  "main": "dist/touchboom",
   "version": "0.2.2",
   "readmeFilename": "README.md",
   "license" : "MIT",
@@ -17,9 +17,12 @@
     "scroungejs": "^1.2.1"
   },
   "scripts" : {
-    "test": "node test/build.js"
+    "start": "node build.js",
+    "prepare": "npm start"
   },
   "keywords": [
+    "inertia",
+    "glide",
     "touch",
     "mouse",
     "tap",

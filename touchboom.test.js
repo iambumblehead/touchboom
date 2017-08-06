@@ -1,5 +1,5 @@
 // Filename: touchboom.test.js  
-// Timestamp: 2016.08.24-13:00:57 (last modified)
+// Timestamp: 2017.08.05-17:12:51 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>  
 
 function addcommonjsmodule () {
@@ -12,10 +12,12 @@ function gettouchboom (fn) {
 
   (function next (arr, x=0, elem) {
     x >= arr.length
-      ? fn(null, window.touchboom_010_src_touchboom)
+      // create build and generate demo page
+      ? fn(null, window[Object.keys(window).find(key => (
+          /^touchboom.*touchboom$/.test(key)))])
       : document.body.appendChild(getscriptelem(arr[x], () => next(arr, ++x)));
   }([
-    './test/src/touchboom.js'
+    './dist/touchboom.js'
   ]));
 }
 
