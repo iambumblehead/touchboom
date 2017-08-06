@@ -44,10 +44,10 @@ rootelem.id = 'id-is-required';
 // all event functions are optional,
 //
 //  * oneventfn, called when an event occurs
-//    'bgn', 'start', 'end', 'move', 'moveend', 'tap', 'cancel', 'over'
+//    touchboom.events
 //
-//  * oninertiafn, called on each 'frame' of movement before and after
-//    touch/mouse release
+//  * oninertiafn, called each 'frame' of movement
+//    before and after touch/mouse release
 //
 //  * onmovefn, called when mouse is over element
 //
@@ -75,7 +75,7 @@ touchboom.attach(cfg, rootelem, {
 [10]: https://iambumblehead.github.io/touchboom/
 
 
-![scrounge](https://github.com/iambumblehead/scroungejs/raw/master/img/hand.png)[![es5 classic][7]][7] 
+![scrounge](https://github.com/iambumblehead/scroungejs/raw/master/img/hand.png)
 
 
 (The MIT License)
