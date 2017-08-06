@@ -1,6 +1,6 @@
 {
   "name": "touchboom",
-  "main": "dist/touchboom",
+  "main": "docs/dist/touchboom",
   "version": "0.2.2",
   "readmeFilename": "README.md",
   "license" : "MIT",

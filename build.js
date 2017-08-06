@@ -1,5 +1,5 @@
 // Filename: build.js  
-// Timestamp: 2017.08.05-17:03:01 (last modified)
+// Timestamp: 2017.08.05-17:34:53 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
 require('scroungejs').build({
@@ -7,7 +7,7 @@ require('scroungejs').build({
   isconcatenated : true,
   ises2015       : false,
   inputpath      : './src/',
-  outputpath     : './dist/',
+  outputpath     : './docs/dist/',
   treearr : [
     'touchboom.js'
   ]
