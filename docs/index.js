@@ -1,5 +1,5 @@
 // Filename: touchboom.test.js  
-// Timestamp: 2017.08.05-17:35:35 (last modified)
+// Timestamp: 2017.08.05-18:07:04 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>  
 
 function addcommonjsmodule () {
@@ -36,22 +36,24 @@ function getcanvaselem (cfg) {
 }
 
 function getscriptelem (src, fn) {
-  console.log('get it');
   var script = document.createElement('script');
   script.src = src;
   script.async = false;
   script.onload = function () {
-    console.log('load');
     fn(null);
   };
   return script;
 }
 
-function getwindowhalfwh () {
+function getwindowwh () {
   return [
     Math.floor(window.innerWidth),
     Math.floor(window.innerHeight)
   ];
+}
+
+function getwindowhalfwh () {
+  return getwindowwh().map(wh => wh / 2);
 }
 
 function paintballrender (cfg, xyr, canvas) {
@@ -95,8 +97,10 @@ function paintballconnect (cfg, canvas) {
 
 (function start(cfg) {
   var rootelem = getrootelem(),
+      windowwh = getwindowwh(),
+      windowhalfwh = getwindowhalfwh(),
       canvas2Delem = getcanvaselem({
-        wh : getwindowhalfwh(),
+        wh : windowwh,
         bg : cfg.paintballbgcolor
       });
 
@@ -111,12 +115,18 @@ function paintballconnect (cfg, canvas) {
     // all properties are optional
     // 
     cfg.coords = touchboom.coords([{
-      bgn : 0
+      bgn : 0,
+
+      // 'optional' properties
+      min : -windowhalfwh[0],
+      max : windowhalfwh[0]
     }, {
       autoweight : 10,
       bgn : 0,
-      min : -400,
-      max : 400
+
+      // 'optional' properties
+      min : -windowhalfwh[1],
+      max : windowhalfwh[1]
     }]);
 
     //
@@ -139,25 +149,27 @@ function paintballconnect (cfg, canvas) {
     //
     touchboom.attach(cfg, rootelem, {
       oneventfn : function (cfg, etype, e) {
-        if (etype === 'moveend') {
-          cfg.centerxy = getcentermousexy(cfg, cfg.boomstepsxy);
+        console.log('touchboom event', etype);
+        if (etype === touchboom.events.MOVEEND) {
+          let centerxy = getcentermousexy(cfg, touchboom.coordsgettotal(cfg));
           
           paintballrender(Object.assign({}, cfg, {
             paintballcolor : cfg.paintballtapcolor,
             stroke : 25
-          }), cfg.centerxy, canvas2Delem);
-        } else if (etype === 'end') {
-          if (cfg.boomistaptap) {
-            paintballrender(Object.assign({}, cfg, {
-              paintballcolor : cfg.paintballtapcolor,
-              stroke : 40
-            }), cfg.centerxy, canvas2Delem);        
-          } else if (cfg.boomistap) {
-            paintballrender(Object.assign({}, cfg, {
-              paintballcolor : cfg.paintballtaptapcolor,
-              stroke : 34
-            }), touchboom.sumxy(cfg.centerxy, cfg.boomstepsxy), canvas2Delem);
-          }
+          }), centerxy, canvas2Delem);
+        } else if (touchboom.events.TAP) {
+          //let centerxy = getcentermousexy(cfg, touchboom.coordsgettotal(cfg));
+          //paintballrender(Object.assign({}, cfg, {
+          //  paintballcolor : cfg.paintballtapcolor,
+          //  stroke : 40
+          //}), centerxy, canvas2Delem);
+        } else if (touchboom.events.TAPTAP) {
+          let centerxy = getcentermousexy(cfg, touchboom.coordsgettotal(cfg));
+          
+          paintballrender(Object.assign({}, cfg, {
+            paintballcolor : cfg.paintballtaptapcolor,
+            stroke : 34
+          }), centerxy, canvas2Delem);
         }
       },
 
