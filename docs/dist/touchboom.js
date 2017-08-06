@@ -1,4 +1,4 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_023_src_touchboom_ev = f()}})(function(){var define,module,exports;module={exports:(exports={})};
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0241_src_touchboom_ev = f()}})(function(){var define,module,exports;module={exports:(exports={})};
 // Filename: touchboom_ev.js  
 // Timestamp: 2017.03.16-15:44:41 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>  
@@ -80,7 +80,7 @@ var curved = module.exports = function () {
   };
 }();
 return module.exports;});
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_023_src_touchboom_ctrl = f()}})(function(){var define,module,exports;module={exports:(exports={})};
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0241_src_touchboom_ctrl = f()}})(function(){var define,module,exports;module={exports:(exports={})};
 // Filename: touchboom_ctrl.js  
 // Timestamp: 2017.08.05-17:55:33 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>  
@@ -102,7 +102,7 @@ return module.exports;});
 // ------------------------+
 //
 
-const touchboom_ev = touchboom_023_src_touchboom_ev,
+const touchboom_ev = touchboom_0241_src_touchboom_ev,
       curved = curved_007_curved;
 
 module.exports = (o => {
@@ -440,7 +440,7 @@ var domev = module.exports = {
   }
 };
 return module.exports;});
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_023_src_touchboom_delegate = f()}})(function(){var define,module,exports;module={exports:(exports={})};
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0241_src_touchboom_delegate = f()}})(function(){var define,module,exports;module={exports:(exports={})};
 // Filename: touchboom_delegate.js  
 // Timestamp: 2017.04.17-18:12:45 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>  
@@ -517,15 +517,15 @@ const touchboom_delegate = module.exports = (o => {
   return o;
 })({});
 return module.exports;});
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_023_src_touchboom_key = f()}})(function(){var define,module,exports;module={exports:(exports={})};
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0241_src_touchboom_key = f()}})(function(){var define,module,exports;module={exports:(exports={})};
 // Filename: touchboom_key.js  
 // Timestamp: 2017.08.05-16:32:00 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>  
 
 const domev = domev_007_domev,
-      touchboom_ev = touchboom_023_src_touchboom_ev,
-      touchboom_ctrl = touchboom_023_src_touchboom_ctrl,
-      touchboom_delegate = touchboom_023_src_touchboom_delegate;
+      touchboom_ev = touchboom_0241_src_touchboom_ev,
+      touchboom_ctrl = touchboom_0241_src_touchboom_ctrl,
+      touchboom_delegate = touchboom_0241_src_touchboom_delegate;
 
 const touchboom_key = module.exports = (o => {
 
@@ -676,15 +676,15 @@ const touchboom_key = module.exports = (o => {
   return o;
 })({});
 return module.exports;});
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_023_src_touchboom_touchmouse = f()}})(function(){var define,module,exports;module={exports:(exports={})};
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0241_src_touchboom_touchmouse = f()}})(function(){var define,module,exports;module={exports:(exports={})};
 // Filename: touchboom_touchmouse.js  
 // Timestamp: 2017.07.02-16:10:49 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>  
 
 const domev = domev_007_domev,
-      touchboom_ev = touchboom_023_src_touchboom_ev,
-      touchboom_ctrl = touchboom_023_src_touchboom_ctrl,
-      touchboom_delegate = touchboom_023_src_touchboom_delegate;
+      touchboom_ev = touchboom_0241_src_touchboom_ev,
+      touchboom_ctrl = touchboom_0241_src_touchboom_ctrl,
+      touchboom_delegate = touchboom_0241_src_touchboom_delegate;
 
 const touchboom_ctrltouchmouse = module.exports = (o => {
 
@@ -945,14 +945,14 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
   return o;
 })({});
 return module.exports;});
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_023_src_touchboom = f()}})(function(){var define,module,exports;module={exports:(exports={})};
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0241_src_touchboom = f()}})(function(){var define,module,exports;module={exports:(exports={})};
 // Filename: touchboom.js  
 // Timestamp: 2017.08.05-17:53:52 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>  
 
-const touchboom_ctrl = touchboom_023_src_touchboom_ctrl,
-      touchboom_key = touchboom_023_src_touchboom_key,
-      touchboom_touchmouse = touchboom_023_src_touchboom_touchmouse;
+const touchboom_ctrl = touchboom_0241_src_touchboom_ctrl,
+      touchboom_key = touchboom_0241_src_touchboom_key,
+      touchboom_touchmouse = touchboom_0241_src_touchboom_touchmouse;
 
 module.exports = (o => {
 
