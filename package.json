@@ -1,7 +1,7 @@
 {
   "name": "touchboom",
-  "main": "docs/dist/touchboom",
-  "version": "0.2.3",
+  "main": "src/touchboom",
+  "version": "0.2.4",
   "readmeFilename": "README.md",
   "license" : "MIT",
   "description": "Report touch/mouse events from the document",
@@ -14,10 +14,13 @@
     "domev": "0.0.7"
   },
   "devDependencies" : {
-    "scroungejs": "^1.2.1"
+    "scroungejs": "^1.2.1",
+    "babel-cli": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1"
   },
   "scripts" : {
     "start": "node build.js",
+    "build": "./node_modules/babel-cli/bin/babel.js --presets es2015 -d dist/ src/touchboom.js",
     "prepare": "npm start"
   },
   "keywords": [
