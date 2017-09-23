@@ -3,24 +3,24 @@
   "main": "src/touchboom",
   "version": "0.2.42",
   "readmeFilename": "README.md",
-  "license" : "MIT",
+  "license": "MIT",
   "description": "Report touch/mouse events from the document",
   "repository": {
     "type": "git",
     "url": "https://github.com/iambumblehead/touchboom.git"
   },
-  "dependencies" : {
+  "dependencies": {
     "curved": "0.0.7",
     "domev": "0.0.7"
   },
-  "devDependencies" : {
-    "scroungejs": "^1.2.1",
+  "devDependencies": {
     "babel-cli": "^6.24.1",
-    "babel-preset-es2015": "^6.24.1"
+    "babel-preset-env": "^1.6.0",
+    "scroungejs": "^1.2.1"
   },
-  "scripts" : {
+  "scripts": {
     "start": "node build.js",
-    "build": "./node_modules/babel-cli/bin/babel.js --presets es2015 -d dist/ src/touchboom.js",
+    "build": "./node_modules/babel-cli/bin/babel.js --presets env -d dist/ src/touchboom.js",
     "prepare": "npm start"
   },
   "keywords": [
