@@ -70,7 +70,7 @@ touchboom.attach(cfg, rootelem, {
 
 [0]: http://www.bumblehead.com                            "bumblehead"
 [7]: https://github.com/ariya/kinetic/                       "kinetic"
-[8]: https://github.com/iambumblehead/touchboom/blob/master/touchboom.test.js "test page"
+[8]: https://github.com/iambumblehead/touchboom/blob/master/docs/index.js "test page"
 [9]: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode#Browser_compatibility
 [10]: https://iambumblehead.github.io/touchboom/
 
