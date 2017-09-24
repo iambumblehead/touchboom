@@ -29,11 +29,10 @@
          height:100%;
          cursor:move; 
      }
-     body > span {
+     body > span,
+     body > img {
          position:absolute;
          pointer-events:none;
-         top:0;
-         left:0;
          padding:20px;
          font-family:arial;
          font-weight:bold; 
@@ -45,15 +44,37 @@
          transition-delay: 1s; 
          transition-timing-function: ease-out;
      }
-     body:focus > span {
+     body > span {
+         top:0;
+         left:0;
+     }
+     body > img {
+         right:0;
+         bottom:0;
+         padding:0;
+     }
+     body:focus > span,
+     body:focus > img {
          opacity:0;
+     }
+     canvas.left,
+     canvas.right {
+         position:absolute;
+         pointer-events:none;
+         top:0;
+     }
+     canvas.left {
+         left:0;
+     }
+     canvas.right {
+         right:0;
      }
   </style>
 </head>
 <body tabindex="0">
-  <noscript>javacript required</noscript>  
-
+  <noscript>javacript required</noscript>
   <script src="./index.js?unique=1" type="text/javascript"></script>
   <span>click or touch the canvas</span>
+  <img src="./img/touchboom-text-small.png" />
 </body>
 </html>

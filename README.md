@@ -2,11 +2,11 @@ touchboom
 =========
 [MIT-license](#license)
 
+[![touchboom](https://github.com/iambumblehead/touchboom/raw/master/docs/img/touchboom.png)][10]
+
 Reports inertial movement and key/touch/mouse events from the document. A reworking of the [motion scripts found here][7], courtesy of Ariya Hidayat.
 
 Try it out by [visiting this page][10]. Try clicking, dragging and releasing.
-
-<iframe src="https://iambumblehead.github.io/touchboom/" width="100%" height="200px" style="border:0;"></iframe>
 
 All handlers connect to the same data, so that mouse-originated glide motions continue alongside key-originated glide motions. One set of listeners are attached to the body from which all events are delegated so that behaviour may be bound many times.
 

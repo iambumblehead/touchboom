@@ -1,5 +1,5 @@
 // Filename: touchboom.test.js  
-// Timestamp: 2017.08.05-18:07:04 (last modified)
+// Timestamp: 2017.09.24-13:51:47 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>  
 
 function addcommonjsmodule () {
@@ -16,7 +16,12 @@ function gettouchboom (fn) {
       ? fn(null, window[Object.keys(window).find(key => (
           /^touchboom.*touchboom$/.test(key)))])
       : document.body.appendChild(getscriptelem(arr[x], () => next(arr, ++x)));
-  }(['./dist/touchboom.js']));
+  }([
+    ////cdnjs.cloudflare.com/ajax/libs/three.js/87/three.min.js
+    (/http/.test(window.location.protocol)
+     ? window.location.protocol : 'http:') + '//cdnjs.cloudflare.com/ajax/libs/three.js/87/three.min.js',
+    './dist/touchboom.js'
+  ]));
 }
 
 function getrootelem () {
@@ -30,7 +35,14 @@ function getcanvaselem (cfg) {
   canvaselem.style.height = cfg.wh[1] + 'px';
   canvaselem.width = cfg.wh[0];
   canvaselem.height = cfg.wh[1];
-  canvaselem.style.backgroundColor = cfg.bg;
+
+  if (cfg.bg) {
+    canvaselem.style.backgroundColor = cfg.bg;
+  }
+
+  if (cfg.className) {
+    canvaselem.className = cfg.className;
+  }  
 
   return canvaselem;
 }
@@ -81,7 +93,6 @@ function getcenterxy (cfg, canvas) {
   ];
 }
 
-// new location?
 function getcentermousexy (cfg, transxy) {
   return transxy
     ? [cfg.centerxy[0] + transxy[0],
@@ -95,18 +106,155 @@ function paintballconnect (cfg, canvas) {
   });
 }
 
+function getsphere (cfg, opacity, radius) {
+  return new THREE.Mesh(
+    new THREE.SphereGeometry(radius, 32, 32),
+    new THREE.MeshBasicMaterial({
+      opacity     : opacity,
+      transparent : true,
+      color       : cfg.bgcolor,
+      side        : THREE.BackSide
+    }));
+}
+
+function getwrapcircle (opacity, color, radius) {
+  return new THREE.Mesh(
+    new THREE.TorusGeometry(radius, .02, 30, 100),
+    new THREE.MeshBasicMaterial({
+      color       : color,
+      wireframe   : true,
+      opacity     : opacity,
+      transparent : true
+    }));
+}
+
+function gettrackball (cfg) {
+  var headgroup = new THREE.Group(),
+      wrapcircle = getwrapcircle(.1, cfg.xcolor, 11),
+      wrapcircle_y90 = getwrapcircle(.1, cfg.ycolor, 11),
+      wrapcircle_z90 = getwrapcircle(.1, cfg.zcolor, 11),
+      eyecircle1 = getwrapcircle(.2, cfg.fgcolor, 6),
+      eyecircle2 = getwrapcircle(.2, cfg.fgcolor, 5),
+      sphere = getsphere(cfg, .7, 20/2);
+  headgroup.name = "headgroup";
+
+  wrapcircle_y90.rotation.y = Math.PI / 2;
+  wrapcircle_z90.rotation.x = Math.PI / 2;
+
+  eyecircle1.position.set(0, 0, -8.1);
+  eyecircle2.position.set(0, 0, -8.9);
+  
+  headgroup.add(sphere);
+  headgroup.add(wrapcircle_y90);
+  headgroup.add(wrapcircle_z90);
+  
+  headgroup.add(wrapcircle);
+  headgroup.add(eyecircle1);
+  headgroup.add(eyecircle2);
+
+  return headgroup;
+};
+
+function getglrenderer (canvaselem) {
+  return new THREE.WebGLRenderer({
+    canvas    : canvaselem,
+    alpha     : true,
+    antialias : true
+  });
+}
+
+function gettrackballscene (cfg, canvaselem) {
+  var wharr = [canvaselem.offsetWidth, canvaselem.offsetHeight],
+      glscene = new THREE.Scene(),
+      camera = new THREE.PerspectiveCamera(60, wharr[0] / wharr[1], 1, 10000),
+      
+      glrenderer = getglrenderer(canvaselem),
+      headgroup = gettrackball(cfg),
+      bodygroup = new THREE.Group(),
+      scenegroup = new THREE.Group();
+
+  bodygroup.add(headgroup);
+  scenegroup.add(bodygroup);
+  scenegroup.rotation.y = -THREE.Math.degToRad(90);
+
+  glscene.add(scenegroup);
+    
+  camera.position.set( 0, 0, -24 );
+  camera.lookAt( glscene.position );
+
+  glscene.rotation.y += -Math.PI / 2;
+
+  return {
+    wharr,
+    headgroup,
+    bodygroup,
+    glrenderer,
+    camera,
+    glscene
+  };
+}
+
+//o.pixel_weightarea = ([w, h]) => 
+//  180 / Math.max(w, h);
+function degreetoradian (d) {
+  return d * (Math.PI/180);
+}
+
+function pixeltodegree (p, pw) {
+  return p * pw;
+}
+
+function pixelweightarea (wh) {
+  return 180 / Math.max(wh[0], wh[1]);
+}
+
+function pixelweight (elem) {
+  return pixelweightarea(
+    elem === window
+      ? [elem.innerWidth, elem.innerHeight]
+      : [elem.clientWidth, elem.clientHeight]);
+}
+
+function appendchild (parent, child) {
+  parent.appendChild(child);
+  
+  return child;
+}
+
 (function start(cfg) {
   var rootelem = getrootelem(),
       windowwh = getwindowwh(),
       windowhalfwh = getwindowhalfwh(),
+      pwwindow = pixelweight(window),
       canvas2Delem = getcanvaselem({
         wh : windowwh,
         bg : cfg.paintballbgcolor
       });
 
   rootelem.appendChild(canvas2Delem);
-
+  
   gettouchboom(function (err, touchboom) {
+    let what,
+        canvasleftscene = gettrackballscene({
+          xcolor : cfg.trackballxcolor,
+          ycolor : cfg.trackballycolor,
+          zcolor : cfg.trackballzcolor,
+          fgcolor : cfg.trackballfgcolor,
+          bgcolor : cfg.trackballbgcolor
+        }, appendchild(rootelem, getcanvaselem({
+          wh : [windowwh[1], windowwh[1]],
+          className : 'left'
+        }))),
+        canvasrightscene = gettrackballscene({
+          xcolor : cfg.trackballxcolor,
+          ycolor : cfg.trackballycolor,
+          zcolor : cfg.trackballzcolor,
+          fgcolor : cfg.trackballfgcolor,
+          bgcolor : cfg.trackballbgcolor
+        }, appendchild(rootelem, getcanvaselem({
+          wh : [windowwh[1], windowwh[1]],
+          className : 'right'
+        })));      
 
     cfg = paintballconnect(cfg, canvas2Delem);
 
@@ -174,11 +322,27 @@ function paintballconnect (cfg, canvas) {
       },
 
       oninertiafn : function (cfg, etype, e) {
+        let totalxy = touchboom.coordsgettotal(cfg),
+            radxy = totalxy.map(function (px, i) {
+              return pixeltodegree(px, pwwindow);
+            }).map(degreetoradian);
+
+        //canvasleftscene.headgroup.rotation.x = radxy[1];
+        //canvasleftscene.bodygroup.rotation.y = radxy[0];
+
+        canvasrightscene.headgroup.rotation.x = radxy[1];
+        canvasrightscene.bodygroup.rotation.y = radxy[0];
+
         paintballrender(cfg, getcentermousexy(cfg, touchboom.coordsgettotal(cfg)), canvas2Delem);
       }
     });
 
     (function animate () {
+      //canvasleftscene.glrenderer.render(
+      //  canvasleftscene.glscene, canvasleftscene.camera);
+      canvasrightscene.glrenderer.render(
+        canvasrightscene.glscene, canvasrightscene.camera);
+
       requestAnimationFrame(animate);
     }());
   });
@@ -187,6 +351,12 @@ function paintballconnect (cfg, canvas) {
   stroke : 8,
   paintballcolor    : '#aff',
   paintballtapcolor : '#fff',
-  paintballtaptapcolor : '#faa',  
-  paintballbgcolor  : '#333'
+  paintballtaptapcolor : '#faa',
+  paintballbgcolor  : '#333',
+
+  trackballxcolor : "rgba(255, 0,   0, 1)",
+  trackballycolor : "rgba(78,  248, 78, 1)",
+  trackballzcolor : "rgba(0,   255, 255, 1)",
+  trackballfgcolor : "rgba(232, 248, 248, 1)",
+  trackballbgcolor : "rgba(43,  51,  63,  1)"
 }));
