@@ -1,7 +1,7 @@
 {
   "name": "touchboom",
   "main": "src/touchboom",
-  "version": "0.2.42",
+  "version": "0.2.43",
   "readmeFilename": "README.md",
   "license": "MIT",
   "description": "Report touch/mouse events from the document",
