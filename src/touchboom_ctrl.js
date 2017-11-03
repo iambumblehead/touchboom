@@ -1,12 +1,12 @@
-// Filename: touchboom_ctrl.js  
-// Timestamp: 2017.08.05-17:55:33 (last modified)
-// Author(s): bumblehead <chris@bumblehead.com>  
+// Filename: touchboom_ctrl.js
+// Timestamp: 2017.11.03-12:25:02 (last modified)
+// Author(s): bumblehead <chris@bumblehead.com>
 //
 // http://ariya.github.io/kinetic/
 // https://ariya.io/2011/10/flick-list-with-its-momentum-scrolling-and-deceleration
 //
 // top left mouse event is position 0,0
-// 
+//
 // +---------------------->|
 // | (0, 0)                | (10, 0)
 // |                       |
@@ -23,11 +23,10 @@ const touchboom_ev = require('./touchboom_ev'),
       curved = require('curved');
 
 module.exports = (o => {
-
   const VELOCITYTHRESHOLD = 10,
         TIMECONST = 325,
-        INF       = Infinity;
-  
+        INF = Infinity;
+
   o = (cfg, parentelem, fn, onmovefn, onoverfn) => {
     cfg.publishfn = fn;
     cfg.onmovefn = onmovefn || function () {};
@@ -41,17 +40,17 @@ module.exports = (o => {
 
   o.events = {
     INTERRUPT : 'interrupt',
-    CANCEL    : 'cancel',
-    KEYSTART  : 'keystart',
-    KEYEND    : 'keyend',
-    MOVE      : 'move',
-    MOVEEND   : 'moveend',
-    OVER      : 'over',
-    START     : 'start',
-    END       : 'end',
-    TAP       : 'tap',
-    TAPTAP    : 'taptap'
-  },
+    CANCEL : 'cancel',
+    KEYSTART : 'keystart',
+    KEYEND : 'keyend',
+    MOVE : 'move',
+    MOVEEND : 'moveend',
+    OVER : 'over',
+    START : 'start',
+    END : 'end',
+    TAP : 'tap',
+    TAPTAP : 'taptap'
+  };
 
   o.onmoveend = (cfg, id, fn) => (
     cfg.onmoveendfn = cfg.onmoveendfn || {},
@@ -64,7 +63,7 @@ module.exports = (o => {
         cfg.onmoveendfn[key](cfg, type, ev);
       });
     }
-    
+
     cfg = touchboom_ev.publish(cfg, o.events.MOVEEND);
 
     return cfg;
@@ -76,18 +75,18 @@ module.exports = (o => {
     } catch (e) {
       o.stop(cfg);
       console.error('[!!!] onmove', e);
-    }    
+    }
   };
 
-  o.coords = (cfgcoords = [{},{}]) => 
+  o.coords = (cfgcoords = [ {}, {} ]) =>
     cfgcoords.map(o.coordget);
-    
+
   o.coordsreset = cfg => (
     // initialize empty coords, two coords by default --x and y
     cfg.coords = o.coords(cfg.coords),
     cfg);
 
-  o.isnum = n => 
+  o.isnum = n =>
     typeof n === 'number';
 
   o.firstnum = numarr =>
@@ -95,25 +94,25 @@ module.exports = (o => {
 
   o.coordget = (c = {}, coorddef = {}) => {
     const now = Date.now();
-    
-    c.min = o.firstnum([c.min, coorddef.min, -INF]);
-    c.max = o.firstnum([c.max, coorddef.max, INF]);
+
+    c.min = o.firstnum([ c.min, coorddef.min, -INF ]);
+    c.max = o.firstnum([ c.max, coorddef.max, INF ]);
 
     // allow changes outside controls to affect ismin and ismax behaviour
     c.getmin = c.getmin || ((cfg, c) => c.min);
     c.getmax = c.getmax || ((cfg, c) => c.max);
 
     c.trackts = now;
-    
+
     // glide coordinates are auto-updated with fixed target and amplitude
     // non-glide coordinates continually updated w/ new target and amplitude
     // isglide defined w/ timestamp of glide initialisation
-    c.isglide  = Boolean(coorddef.isglide) && now;
-    
+    c.isglide = Boolean(coorddef.isglide) && now;
+
     // ismove is timestamp of move initialiszation
-    c.ismove   = Boolean(coorddef.ismove) && now;
-    c.startpos  = +coorddef.start;
-    c.lastpos   = +coorddef.start;
+    c.ismove = Boolean(coorddef.ismove) && now;
+    c.startpos = +coorddef.start;
+    c.lastpos = +coorddef.start;
 
     if (o.isnum(c.total)) {
       c.total = c.total;
@@ -124,15 +123,15 @@ module.exports = (o => {
     } else {
       c.total = 0;
     }
-    
+
     c.autoweight = c.autoweight || coorddef.autoweight;
-    c.offset    = 0;        
-    c.target    = 0;
-    c.velocity  = 0;
+    c.offset = 0;
+    c.target = 0;
+    c.velocity = 0;
     c.amplitude = 0;
-    c.frame     = 0;
-    c.offset     = 0;
-    c.type      = coorddef.type || c.type;
+    c.frame = 0;
+    c.offset = 0;
+    c.type = coorddef.type || c.type;
 
     return c;
   };
@@ -142,7 +141,7 @@ module.exports = (o => {
 
   o.coordset = (c, props) =>
     Object.assign({}, c, props);
-  
+
   // mutates cfg.coords
   o.coordsupdatepassive = (cfg, now = Date.now()) => (
     cfg.coords = cfg.coords.map(c => (
@@ -152,7 +151,7 @@ module.exports = (o => {
 
   o.coordsgettotal = cfg => (
     o.coordsupdatepassive(cfg).coords.map(c => c.total + c.offset));
-  
+
   o.coordsismove = cfg =>
     cfg.coords.some(c => c.ismove);
 
@@ -163,34 +162,34 @@ module.exports = (o => {
   o.start = (cfg, e) => (
     cfg.rafcoordidarr = cfg.coords.map((c, i) => (
       c.ismove || cfg.rafcoordidarr[i])),
-    cfg.ticker = setInterval(e => o.coordsupdate(cfg), 100),
+    cfg.ticker = setInterval(() => o.coordsupdate(cfg), 100),
     o.coordsmovestart(cfg, e),
     cfg);
-  
+
   o.getdeltacurve = ((maxms, curve) => {
     maxms = 1000;
     curve = curved(3, 10, 'bgn');
-    
+
     return (c, timestart, timenow) => {
       const timediff = (timenow - timestart) / maxms;
 
       return (c.autoweight
-       ? curved(c.autoweight * .2, c.autoweight, 'bgn')
-       : curve)(timediff > 1 ? 1 : timediff);
+        ? curved(c.autoweight * 0.2, c.autoweight, 'bgn')
+        : curve)(timediff > 1 ? 1 : timediff);
     };
-  })();  
-  
+  })();
+
   o.getvelocityupdated = (offset, frame, velocity, elapsedms) => (
-    0.4 * (//0.8 * (
-      1000 * (             // velocity
-        offset - frame     // delta
+    0.4 * ( // 0.8 * (
+      1000 * ( // velocity
+        offset - frame // delta
       ) / (1 + elapsedms)) + 0.2 * velocity
   );
 
   o.getamplitudeupdated = (velocity, amplitude, velocitythreshold) =>
     Math.abs(velocity) > velocitythreshold ? 0.8 * velocity : amplitude;
 
-  o.gettargetupdated = (velocity, offset, amplitude, target) =>
+  o.gettargetupdated = (velocity, offset, amplitude) =>
     Math.abs(velocity) > 10 ? Math.round(offset + amplitude) : offset;
 
   o.coordupdatepassive = (cfg, c, now = Date.now()) => {
@@ -199,22 +198,22 @@ module.exports = (o => {
       c.lastdelta += o.getdeltacurve(c, c.ismove, now) * c.dir;
       c = o.updatecoord(cfg, c, c.lastdelta);
     }
-      
+
     return c;
   };
 
   o.coordupdate = (cfg, c, date = Date.now()) =>
     o.coordset(c, {
       velocity : o.getvelocityupdated(c.offset, c.frame, c.velocity, date - c.trackts),
-      frame    : c.offset,
-      trackts  : date
+      frame : c.offset,
+      trackts : date
     });
 
   o.coordsupdate = (cfg, now = Date.now()) => {
     cfg.coords = cfg.coords.map(c => (
       c.isglide ? c : o.coordupdate(cfg, c, now)
     ));
-    
+
     return cfg;
   };
 
@@ -227,14 +226,14 @@ module.exports = (o => {
   o.getoffset = (cfg, offset, cur, min, max) => (
     offset > 0
       ? ((cur + offset <= max)
-         ? offset : cur >= max ? 0 : max - cur)
+        ? offset : cur >= max ? 0 : max - cur)
       : ((cur + offset >= min)
-         ? offset : cur <= min ? 0 : min - cur));
-                                      
+        ? offset : cur <= min ? 0 : min - cur));
+
   o.movecoord = (cfg, c, dist) =>
     o.coordset(c, {
       offset : o.getoffset(cfg, dist, c.total, c.getmin(cfg, c), c.getmax(cfg, c))
-    });    
+    });
 
   o.movecoordauto = (cfg, c, now) => {
     const elapsed = now - c.trackts,
@@ -290,17 +289,12 @@ module.exports = (o => {
 
   o.coordstopped = (cfg, c) => {
     c.total += c.offset;
-    c.offset = 0;          
+    c.offset = 0;
     c.ismove = false;
 
     return c;
   };
-  //o.coordset(c, {
-  //  ismove : false,
-  //  total : c.total + c.offset,
-  //  offset : 0          
-  //});
-    
+
   o.coordmoveend = (cfg, c, now = Date.now()) => {
     if (Math.abs(c.velocity) > VELOCITYTHRESHOLD) {
       c.trackts = now;
@@ -327,10 +321,10 @@ module.exports = (o => {
         o.onmovefn(cfg, e);
       }
     });
-  
+
   o.coordsmoveend = (cfg, e) => {
     cfg = o.stop(cfg);
-    
+
     if (cfg.isinertia && o.coordsismove(cfg)) {
       requestAnimationFrame(() => o.automove(cfg, e, cfg.rafcoordidarr.slice()));
     } else {
@@ -340,5 +334,4 @@ module.exports = (o => {
   };
 
   return o;
-  
 })({});

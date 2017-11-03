@@ -1,16 +1,22 @@
-// Filename: build.js  
-// Timestamp: 2017.08.05-17:34:53 (last modified)
+// Filename: build.js
+// Timestamp: 2017.11.03-11:51:39 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
 require('scroungejs').build({
-  iscompressed   : false,
+  iscompressed : false,
   isconcatenated : true,
-  ises2015       : false,
-  inputpath      : './src/',
-  outputpath     : './docs/dist/',
+  inputpath : './src/',
+  outputpath : './docs/dist/',
+  basepagein : './docs/index.tpl.html',
+  basepage : './docs/index.html',
+  publicpath : '/touchboom/dist',
   treearr : [
-    'touchboom.js'
+    'touchboom.js',
+    'touchboom_demo.js'
+  ],
+  babelpluginarr : [
+    'transform-object-rest-spread'
   ]
-}, (err) => {
+}, err => {
   console.log(err || 'done');
 });

@@ -1,29 +1,27 @@
-// Filename: touchboom_touchmouse.js  
-// Timestamp: 2017.07.02-16:10:49 (last modified)
-// Author(s): bumblehead <chris@bumblehead.com>  
+// Filename: touchboom_touchmouse.js
+// Timestamp: 2017.11.03-11:40:07 (last modified)
+// Author(s): bumblehead <chris@bumblehead.com>
 
 const domev = require('domev'),
+      evdelegate = require('evdelegate'),
+
       touchboom_ev = require('./touchboom_ev'),
-      touchboom_ctrl = require('./touchboom_ctrl'),
-      touchboom_delegate = require('./touchboom_delegate');
+      touchboom_ctrl = require('./touchboom_ctrl');
 
-const touchboom_ctrltouchmouse = module.exports = (o => {
-
+module.exports = (o => {
   const TYPE = 'touchmouse',
-        TAPTIMETHRESHOLD    = 200,
+        TAPTIMETHRESHOLD = 200,
         TAPTAPTIMETHRESHOLD = 200,
-        //TAPTAPTIMETHRESHOLD = 600,
-        TAPMOVETHRESHOLD    = 10;
+        TAPMOVETHRESHOLD = 10,
 
-  const {
-    INTERRUPT, CANCEL, MOVE, OVER,
-    START, END, TAP, TAPTAP
-  } = touchboom_ctrl.events;
+        { INTERRUPT, CANCEL, MOVE, OVER,
+          START, END, TAP, TAPTAP
+        } = touchboom_ctrl.events;
 
-  o = (cfg, touchboom_ctrl, parentelem, fn) => 
+  o = (cfg, touchboom_ctrl, parentelem, fn) =>
     o.connectdelegate(cfg, touchboom_ctrl, parentelem, fn);
 
-  o.istapev = (cfg, taptimetrheshold, tapmovethreshold) => 
+  o.istapev = cfg =>
     cfg.coords.some(c => (
       c.ismove
         && (Date.now() - c.ismove < TAPTIMETHRESHOLD)
@@ -33,8 +31,8 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
   o.getevxy = e => (
     Array.isArray(e) ?
       e : e && typeof e.clientX === 'number'
-      ? [e.clientX, e.clientY]
-      : [e.changedTouches[0].pageX, e.changedTouches[0].pageY]);
+        ? [ e.clientX, e.clientY ]
+        : [ e.changedTouches[0].pageX, e.changedTouches[0].pageY ]);
 
   o.getelemxy = elem => {
     let rect = elem.getBoundingClientRect(),
@@ -43,10 +41,10 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
 
     return [
       rect.left + (win.pageXOffset || docelem.scrollLeft),
-      rect.top  + (win.pageYOffset || docelem.scrollTop)
+      rect.top + (win.pageYOffset || docelem.scrollTop)
     ];
   };
-  
+
   o.getevxyrelativeelem = (e, elem) => {
     let evxy = o.getevxy(e);
 
@@ -68,7 +66,7 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
 
   o.start = (cfg, touchboom_ctrl, e) => {
     let evarr = o.getevxy(e);
-    
+
     if (touchboom_ctrl.coordsismove(cfg)) {
       cfg = touchboom_ctrl.stop(cfg);
       cfg.coords = cfg.coords.map(c => (
@@ -76,7 +74,7 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
           total : c.total + c.offset,
           offset : 0
         })));
-      
+
       cfg = touchboom_ev.publish(cfg, INTERRUPT, e);
     }
 
@@ -93,12 +91,12 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
   };
 
   o.move = (cfg, touchboom_ctrl, e) => {
-    let evarr = o.getevxy(e);    
+    let evarr = o.getevxy(e);
 
     cfg = touchboom_ev.publish(cfg, MOVE, e);
 
     cfg.coords = cfg.coords.map((c, i) => (
-      c.type == TYPE && (c.ismove && !c.isglide)
+      c.type === TYPE && (c.ismove && !c.isglide)
         ? touchboom_ctrl.updatecoord(cfg, c, evarr[i]) : c));
   };
 
@@ -114,12 +112,12 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
   //  - must be not-moving OR if moving must be gliding (user disengaged)
   //
   // prevents multiple, separated -touch/click
-  o.istaptapvalid = cfg => 
+  o.istaptapvalid = cfg =>
     cfg.coords.every(c => !c.ismove || c.isglide) &&
     (touchboom_ctrl
-     .coordsgettotal(cfg)
-     .every(coordtotal => coordtotal < 20));
-  
+      .coordsgettotal(cfg)
+      .every(coordtotal => coordtotal < 20));
+
   o.movecomplete = (cfg, touchboom_ctrl, e) => {
     if (!touchboom_ctrl.coordsismove(cfg)) {
       cfg.publishfn(cfg, END, e);
@@ -134,7 +132,7 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
 
       if (cfg.istaptap && o.istaptapvalid(cfg)) {
         cfg.publishfn(cfg, TAPTAP, e);
-      }      
+      }
     }
 
     if (e.type === 'mouseout' &&
@@ -162,27 +160,27 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
 
     cfg = touchboom_ctrl.stop(cfg);
   };
-  
-  o.connect = (cfg, touchboom_ctrl, parentelem, fn) => {
-    touchboom_ev.lsnpub(cfg, parentelem, ['mousedown', 'touchstart'], (cfg, e) => {
+
+  o.connect = (cfg, touchboom_ctrl, parentelem) => {
+    touchboom_ev.lsnpub(cfg, parentelem, [ 'mousedown', 'touchstart' ], (cfg, e) => {
       e.preventDefault();
-      
+
       o.start(cfg, touchboom_ctrl, e);
     });
 
-    touchboom_ev.lsnpub(cfg, parentelem, ['mousemove', 'touchmove'], (cfg, e) => {
+    touchboom_ev.lsnpub(cfg, parentelem, [ 'mousemove', 'touchmove' ], (cfg, e) => {
       o.move(cfg, touchboom_ctrl, e);
     });
 
-    touchboom_ev.lsnpub(cfg, parentelem, ['mouseup', 'mouseout', 'touchend'], (cfg, e) => {
+    touchboom_ev.lsnpub(cfg, parentelem, [ 'mouseup', 'mouseout', 'touchend' ], (cfg, e) => {
       if (o.ismouseoutparent(e, parentelem)) {
         return null;
       }
 
       o.movecomplete(cfg, touchboom_ctrl, e);
     });
-    
-    touchboom_ev.lsnpub(cfg, parentelem, ['touchcancel'], (cfg, e) => {
+
+    touchboom_ev.lsnpub(cfg, parentelem, [ 'touchcancel' ], (cfg, e) => {
       o.movecancel(cfg, touchboom_ctrl, e);
     });
 
@@ -192,7 +190,7 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
   o.delegator = null;
 
   o.startdelegator = (elem, e) => {
-    let ctrldel = touchboom_delegate,
+    let ctrldel = evdelegate,
         delegatorstate = ctrldel.getelemstate(o.delegator, elem);
 
     if (delegatorstate) {
@@ -201,10 +199,10 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
       o.start(ctrldel.getstatemeta(delegatorstate), touchboom_ctrl, e);
     }
   };
-  
-  o.connectdelegate = (cfg, touchboom_ctrl, parentelem, fn) => {
-    let body = document.body,
-        ctrldel = touchboom_delegate;
+
+  o.connectdelegate = (cfg, touchboom_ctrl, parentelem) => {
+    let { body } = document,
+        ctrldel = evdelegate;
 
     if (!parentelem || !parentelem.id) {
       console.error('parent element exist w/ valid id');
@@ -217,8 +215,7 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
       touchboom_ev.lsnpub({}, body, [
         'mouseover'
       ], (cfg, e) => {
-        let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e)),
-            statemeta = delegatorstate && ctrldel.getstatemeta(delegatorstate);
+        let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e));
 
         if (delegatorstate) {
           o.delegator = ctrldel.setmouseoverstate(o.delegator, delegatorstate);
@@ -238,7 +235,7 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
           o.start(statemeta, touchboom_ctrl, e);
         }
       });
-      
+
       touchboom_ev.lsnpub({}, body, [
         'mousemove', 'touchmove'
       ], (cfg, e) => {
@@ -250,7 +247,7 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
           statemeta = ctrldel.getstatemeta(mouseoverstate);
           o.over(statemeta, touchboom_ctrl, e);
         }
-        
+
         if (delegatorstate) {
           statemeta = ctrldel.getstatemeta(delegatorstate);
           o.move(statemeta, touchboom_ctrl, e);
@@ -263,7 +260,6 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
         let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e)),
             statemeta = delegatorstate && ctrldel.getstatemeta(delegatorstate);
 
-        
         if (delegatorstate) {
           if (o.ismouseoutparent(e, ctrldel.getstateelem(statemeta))) {
             return null;
@@ -281,17 +277,17 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
         'touchcancel'
       ], (cfg, e) => {
         let delegatorstate = ctrldel.getactivestate(o.delegator);
-        
+
         if (delegatorstate) {
           ctrldel.rmactivestate(o.delegator);
           ctrldel.rmmouseoverstate(o.delegator, delegatorstate);
-          
+
           o.movecancel(cfg, touchboom_ctrl, e);
         }
       });
     }
 
-    cfg = touchboom_ctrl.onmoveend(cfg, 'touchmouse', (cfg, type, e) => {
+    cfg = touchboom_ctrl.onmoveend(cfg, 'touchmouse', (/* cfg, type, e */) => {
       ctrldel.rmactivestate(o.delegator);
     });
 
@@ -301,5 +297,4 @@ const touchboom_ctrltouchmouse = module.exports = (o => {
   };
 
   return o;
-
 })({});
