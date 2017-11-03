@@ -1,5 +1,5 @@
 // Filename: touchboom.js
-// Timestamp: 2017.11.03-11:33:04 (last modified)
+// Timestamp: 2017.11.03-13:41:06 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
 const touchboom_ctrl = require('./touchboom_ctrl'),
@@ -16,6 +16,14 @@ module.exports = (o => {
     rafcfg = touchboom_touchmouse(rafcfg, touchboom_ctrl, elem);
     rafcfg = touchboom_key(rafcfg, touchboom_ctrl, elem);
     rafcfg = touchboom_ctrl(rafcfg, elem, oneventfn, oninertiafn, onmovefn);
+
+    return rafcfg;
+  };
+
+  o.detach = (rafcfg, elem) => {
+    rafcfg = touchboom_touchmouse.detach(rafcfg, elem);
+    rafcfg = touchboom_key.detach(rafcfg, elem);
+    rafcfg = touchboom_ctrl.detach(rafcfg);
 
     return rafcfg;
   };

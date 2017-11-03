@@ -1,5 +1,5 @@
 // Filename: touchboom_key.js
-// Timestamp: 2017.11.03-11:36:38 (last modified)
+// Timestamp: 2017.11.03-13:27:40 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
 const domev = require('domev'),
@@ -130,6 +130,12 @@ module.exports = (o => {
 
   o.delegator = null;
 
+  o.detach = (cfg, parentelem) => {
+    o.delegator = evdelegate.rmelemstate(o.delegator, parentelem);
+
+    return cfg;
+  };
+
   o.connectdelegate = (cfg, touchboom, parentelem) => {
     let { body } = document,
         ctrldel = evdelegate;
@@ -142,7 +148,7 @@ module.exports = (o => {
     if (!o.delegator) {
       o.delegator = ctrldel.create();
 
-      touchboom_ev.lsnpub({}, body, [ 'keydown' ], (cfg, e) => {
+      ctrldel.lsnpubarr(o.delegator, {}, body, [ 'keydown' ], (cfg, e) => {
         let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e));
 
         if (delegatorstate) {
@@ -152,7 +158,7 @@ module.exports = (o => {
         }
       });
 
-      touchboom_ev.lsnpub({}, body, [ 'keyup' ], (cfg, e) => {
+      ctrldel.lsnpubarr(o.delegator, {}, body, [ 'keyup' ], (cfg, e) => {
         let delegatorstate = ctrldel.getactivestate(o.delegator);
 
         if (delegatorstate) {

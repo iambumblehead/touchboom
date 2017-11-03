@@ -1,7 +1,7 @@
 {
   "name": "touchboom",
   "main": "src/touchboom",
-  "version": "0.2.44",
+  "version": "0.2.45",
   "readmeFilename": "README.md",
   "license": "MIT",
   "description": "Report touch/mouse events from the document",
@@ -10,7 +10,7 @@
     "url": "https://github.com/iambumblehead/touchboom.git"
   },
   "dependencies": {
-    "evdelegate": "^0.0.1",
+    "evdelegate": "^0.0.3",
     "curved": "0.0.7",
     "domev": "0.0.7"
   },

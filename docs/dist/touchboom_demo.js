@@ -1,4 +1,109 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0244_src_touchboom_ev = f()}})(function(){var define,module,exports;module={exports:(exports={})};
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.evdelegate_003_evdelegate = f()}})(function(){var define,module,exports;module={exports:(exports={})};
+// Filename: evdelegator.js
+// Timestamp: 2017.11.03-13:35:11 (last modified)
+// Author(s): bumblehead <chris@bumblehead.com>
+
+module.exports = (o => {
+  // delegator:
+  //
+  //   activestate :
+  //     [[depth, 'elemid', {state}],
+  //      [depth, 'elemid', {state}]]
+  //
+  //   statearr : [ ...statearr ]
+  //
+  o.create = () => ({
+    listenersarr: [],
+    activestate: null,
+    statearr: []
+  });
+
+  o.setmouseoverstate = (delegator, activestate) => (delegator.mouseoverstate = activestate, delegator);
+
+  o.getmouseoverstate = delegator => delegator.mouseoverstate;
+
+  o.rmmouseoverstate = delegator => (delegator.mouseoverstate = null, delegator);
+
+  o.setactivestate = (delegator, activestate) => (delegator.activestate = activestate, delegator);
+
+  o.getactivestate = delegator => delegator.activestate;
+
+  o.rmactivestate = delegator => (delegator.activestate = null, delegator);
+
+  o.getactivestatemeta = delegator => o.getstatemeta(o.getactivestate(delegator));
+
+  // state:
+  //
+  //   [[depth, 'elemid', {state}],
+  //    [depth, 'elemid', {state}]]
+  //
+  o.createstate = (depth, elemid, meta) => [depth, elemid, meta];
+
+  o.isstatesame = (statea, stateb) => o.getstateid(statea) === o.getstateid(stateb);
+
+  o.createelemstate = (elem, meta) => o.createstate(o.getelemdepth(elem), elem.id, meta);
+
+  o.getstatemeta = delegatorstate => delegatorstate && delegatorstate[2];
+
+  o.getstateid = delegatorstate => delegatorstate && delegatorstate[1];
+
+  o.getstateelem = delegatorstate => delegatorstate && document.getElementById(delegatorstate[1]);
+
+  o.haselemid = (elem, elemid, elemidelem) => Boolean(elem && (elemidelem = document.getElementById(elemid)) && (elem.isEqualNode(elemidelem) || elemidelem.contains(elem)));
+
+  o.getelemstate = (delegator, elem) => delegator.statearr.find(([, id]) => o.haselemid(elem, id));
+
+  o.getelemdepth = (elem, depth = 0) => elem.parentNode ? o.getelemdepth(elem.parentNode, ++depth) : depth;
+
+  // sorting arranges elements 'deeper' in the document to appear first
+  //
+  // for elements w/ parent/child relationship --yield child first
+  o.delegatordepthsort = ([elemadepth], [elembdepth]) => elemadepth > elembdepth ? 1 : -1;
+
+  o.addstate = (delegator, state) => (delegator.statearr = delegator.statearr.filter(stateelem => !o.isstatesame(stateelem, state)), delegator.statearr.push(state), delegator.statearr = delegator.statearr.sort(o.delegatordepthsort), delegator);
+
+  o.addelemstate = (delegator, elem, state) => {
+    if (!elem || !elem.id) {
+      console.error('parent element exist w/ valid id');
+    } else {
+      delegator = o.addstate(delegator, o.createelemstate(elem, state));
+    }
+
+    return delegator;
+  };
+
+  o.rmelemstate = (delegator, elem) => {
+    delegator.statearr = delegator.statearr.filter(stateelem => o.getstateid(stateelem) !== elem.id);
+
+    // completely removes *all* listeners associtated w/ delegator
+    delegator.listenersarr.map(([listeners, lsnfn]) => {
+      o.lsnrmarr(elem, listeners, lsnfn);
+    });
+
+    return delegator;
+  };
+
+  //
+  // convenience data
+  //
+  o.lsnarr = (elem, evarr, fn) => evarr.map(e => elem.addEventListener(e, fn));
+
+  o.lsnrmarr = (elem, evarr, fn) => evarr.map(e => elem.removeEventListener(e, fn));
+
+  o.lsnpubarr = (delegator, cfg, elem, evarr, fn) => {
+    const lsnfn = e => fn(cfg, e, fn);
+
+    delegator.listenersarr.push([evarr, lsnfn]);
+
+    o.lsnarr(elem, evarr, lsnfn);
+
+    return delegator;
+  };
+
+  return o;
+})({});
+return module.exports;});
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0245_src_touchboom_ev = f()}})(function(){var define,module,exports;module={exports:(exports={})};
 // Filename: touchboom_ev.js
 // Timestamp: 2017.11.03-11:32:20 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
@@ -79,9 +184,9 @@ var curved = module.exports = function () {
   };
 }();
 return module.exports;});
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0244_src_touchboom_ctrl = f()}})(function(){var define,module,exports;module={exports:(exports={})};
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0245_src_touchboom_ctrl = f()}})(function(){var define,module,exports;module={exports:(exports={})};
 // Filename: touchboom_ctrl.js
-// Timestamp: 2017.11.03-12:25:02 (last modified)
+// Timestamp: 2017.11.03-12:38:05 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 //
 // http://ariya.github.io/kinetic/
@@ -101,7 +206,7 @@ return module.exports;});
 // ------------------------+
 //
 
-const touchboom_ev = touchboom_0244_src_touchboom_ev,
+const touchboom_ev = touchboom_0245_src_touchboom_ev,
       curved = curved_007_curved;
 
 module.exports = (o => {
@@ -116,6 +221,15 @@ module.exports = (o => {
     cfg.isinertia = typeof cfg.isinertia === 'boolean' ? cfg.isinertia : true;
     cfg.rafcoordidarr = [];
     cfg = o.coordsreset(cfg);
+
+    return cfg;
+  };
+
+  o.detach = cfg => {
+    cfg.publishfn = null;
+    cfg.onmovefn = null;
+    cfg.onoverfn = null;
+    cfg.rafcoordidarr = [];
 
     return cfg;
   };
@@ -435,99 +549,15 @@ var domev = module.exports = {
   }
 };
 return module.exports;});
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.evdelegate_001_evdelegate = f()}})(function(){var define,module,exports;module={exports:(exports={})};
-// Filename: evdelegator.js  
-// Timestamp: 2017.10.19-22:16:30 (last modified)
-// Author(s): bumblehead <chris@bumblehead.com>  
-
-module.exports = (o => {
-
-  // delegator:
-  //
-  //   activestate :
-  //     [[depth, 'elemid', {state}],
-  //      [depth, 'elemid', {state}]]
-  //
-  //   statearr : [ ...statearr ]
-  //  
-  o.create = () => ({
-    activestate: null,
-    statearr: []
-  });
-
-  o.setmouseoverstate = (delegator, activestate) => (delegator.mouseoverstate = activestate, delegator);
-
-  o.getmouseoverstate = delegator => delegator.mouseoverstate;
-
-  o.rmmouseoverstate = (delegator, activestate) => (delegator.mouseoverstate = null, delegator);
-
-  o.setactivestate = (delegator, activestate) => (delegator.activestate = activestate, delegator);
-
-  o.getactivestate = delegator => delegator.activestate;
-
-  o.rmactivestate = delegator => (delegator.activestate = null, delegator);
-
-  o.getactivestatemeta = delegator => o.getstatemeta(o.getactivestate(delegator));
-
-  // state:
-  //
-  //   [[depth, 'elemid', {state}],
-  //    [depth, 'elemid', {state}]]
-  //  
-  o.createstate = (depth, elemid, meta) => [depth, elemid, meta];
-
-  o.isstatesame = (statea, stateb) => o.getstateid(statea) === o.getstateid(stateb);
-
-  o.createelemstate = (elem, meta) => o.createstate(o.getelemdepth(elem), elem.id, meta);
-
-  o.getstatemeta = delegatorstate => delegatorstate && delegatorstate[2];
-
-  o.getstateid = delegatorstate => delegatorstate && delegatorstate[1];
-
-  o.getstateelem = delegatorstate => delegatorstate && document.getElementById(delegatorstate[1]);
-
-  o.haselemid = (elem, elemid, elemidelem) => Boolean(elem && (elemidelem = document.getElementById(elemid)) && (elem.isEqualNode(elemidelem) || elemidelem.contains(elem)));
-
-  o.getelemstate = (delegator, elem) => delegator.statearr.find(([depth, id, meta]) => o.haselemid(elem, id));
-
-  o.getelemdepth = (elem, depth = 0) => elem.parentNode ? o.getelemdepth(elem.parentNode, ++depth) : depth;
-
-  // sorting arranges elements 'deeper' in the document to appear first
-  //
-  // for elements w/ parent/child relationship --yield child first
-  o.delegatordepthsort = ([elemadepth], [elembdepth]) => elemadepth > elembdepth ? 1 : -1;
-
-  o.addstate = (delegator, state) => (delegator.statearr = delegator.statearr.filter(stateelem => !o.isstatesame(stateelem, state)), delegator.statearr.push(state), delegator.statearr = delegator.statearr.sort(o.delegatordepthsort), delegator);
-
-  o.addelemstate = (delegator, elem, state) => {
-    if (!elem || !elem.id) {
-      console.error('parent element exist w/ valid id');
-    } else {
-      delegator = o.addstate(delegator, o.createelemstate(elem, state));
-    }
-
-    return delegator;
-  };
-
-  //
-  // convenience data
-  //
-  o.lsnarr = (elem, evarr, fn) => evarr.map(e => elem.addEventListener(e, fn));
-
-  o.lsnrmarr = (elem, evarr, fn) => evarr.map(e => elem.removeEventListener(e, fn));
-
-  return o;
-})({});
-return module.exports;});
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0244_src_touchboom_key = f()}})(function(){var define,module,exports;module={exports:(exports={})};
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0245_src_touchboom_key = f()}})(function(){var define,module,exports;module={exports:(exports={})};
 // Filename: touchboom_key.js
-// Timestamp: 2017.11.03-11:36:38 (last modified)
+// Timestamp: 2017.11.03-13:27:40 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
 const domev = domev_007_domev,
-      evdelegate = evdelegate_001_evdelegate,
-      touchboom_ev = touchboom_0244_src_touchboom_ev,
-      touchboom_ctrl = touchboom_0244_src_touchboom_ctrl;
+      evdelegate = evdelegate_003_evdelegate,
+      touchboom_ev = touchboom_0245_src_touchboom_ev,
+      touchboom_ctrl = touchboom_0245_src_touchboom_ctrl;
 
 module.exports = (o => {
   const DIR_LEFT = 'DIR_LEFT',
@@ -627,6 +657,12 @@ module.exports = (o => {
 
   o.delegator = null;
 
+  o.detach = (cfg, parentelem) => {
+    o.delegator = evdelegate.rmelemstate(o.delegator, parentelem);
+
+    return cfg;
+  };
+
   o.connectdelegate = (cfg, touchboom, parentelem) => {
     let { body } = document,
         ctrldel = evdelegate;
@@ -639,7 +675,7 @@ module.exports = (o => {
     if (!o.delegator) {
       o.delegator = ctrldel.create();
 
-      touchboom_ev.lsnpub({}, body, ['keydown'], (cfg, e) => {
+      ctrldel.lsnpubarr(o.delegator, {}, body, ['keydown'], (cfg, e) => {
         let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e));
 
         if (delegatorstate) {
@@ -649,7 +685,7 @@ module.exports = (o => {
         }
       });
 
-      touchboom_ev.lsnpub({}, body, ['keyup'], (cfg, e) => {
+      ctrldel.lsnpubarr(o.delegator, {}, body, ['keyup'], (cfg, e) => {
         let delegatorstate = ctrldel.getactivestate(o.delegator);
 
         if (delegatorstate) {
@@ -672,15 +708,15 @@ module.exports = (o => {
   return o;
 })({});
 return module.exports;});
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0244_src_touchboom_touchmouse = f()}})(function(){var define,module,exports;module={exports:(exports={})};
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0245_src_touchboom_touchmouse = f()}})(function(){var define,module,exports;module={exports:(exports={})};
 // Filename: touchboom_touchmouse.js
-// Timestamp: 2017.11.03-11:40:07 (last modified)
+// Timestamp: 2017.11.03-13:27:09 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
 const domev = domev_007_domev,
-      evdelegate = evdelegate_001_evdelegate,
-      touchboom_ev = touchboom_0244_src_touchboom_ev,
-      touchboom_ctrl = touchboom_0244_src_touchboom_ctrl;
+      evdelegate = evdelegate_003_evdelegate,
+      touchboom_ev = touchboom_0245_src_touchboom_ev,
+      touchboom_ctrl = touchboom_0245_src_touchboom_ctrl;
 
 module.exports = (o => {
   const TYPE = 'touchmouse',
@@ -846,6 +882,13 @@ module.exports = (o => {
     }
   };
 
+  o.detach = (cfg, parentelem) => {
+    // console.log('detach touchmouse', o.delegator);
+    o.delegator = evdelegate.rmelemstate(o.delegator, parentelem);
+
+    return cfg;
+  };
+
   o.connectdelegate = (cfg, touchboom_ctrl, parentelem) => {
     let { body } = document,
         ctrldel = evdelegate;
@@ -858,7 +901,9 @@ module.exports = (o => {
     if (!o.delegator) {
       o.delegator = ctrldel.create();
 
-      touchboom_ev.lsnpub({}, body, ['mouseover'], (cfg, e) => {
+      // removing 
+      //touchboom_ev.lsnpub({}, body, [
+      ctrldel.lsnpubarr(o.delegator, {}, body, ['mouseover'], (cfg, e) => {
         let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e));
 
         if (delegatorstate) {
@@ -866,7 +911,7 @@ module.exports = (o => {
         }
       });
 
-      touchboom_ev.lsnpub({}, body, ['mousedown', 'touchstart'], (cfg, e) => {
+      ctrldel.lsnpubarr(o.delegator, {}, body, ['mousedown', 'touchstart'], (cfg, e) => {
         let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e)),
             statemeta = delegatorstate && ctrldel.getstatemeta(delegatorstate);
 
@@ -878,7 +923,7 @@ module.exports = (o => {
         }
       });
 
-      touchboom_ev.lsnpub({}, body, ['mousemove', 'touchmove'], (cfg, e) => {
+      ctrldel.lsnpubarr(o.delegator, {}, body, ['mousemove', 'touchmove'], (cfg, e) => {
         let delegatorstate = ctrldel.getactivestate(o.delegator),
             mouseoverstate = ctrldel.getmouseoverstate(o.delegator),
             statemeta;
@@ -894,7 +939,7 @@ module.exports = (o => {
         }
       });
 
-      touchboom_ev.lsnpub({}, body, ['mouseup', 'mouseout', 'touchend'], (cfg, e) => {
+      ctrldel.lsnpubarr(o.delegator, {}, body, ['mouseup', 'mouseout', 'touchend'], (cfg, e) => {
         let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e)),
             statemeta = delegatorstate && ctrldel.getstatemeta(delegatorstate);
 
@@ -911,7 +956,7 @@ module.exports = (o => {
         }
       });
 
-      touchboom_ev.lsnpub({}, body, ['touchcancel'], (cfg, e) => {
+      ctrldel.lsnpubarr(o.delegator, {}, body, ['touchcancel'], (cfg, e) => {
         let delegatorstate = ctrldel.getactivestate(o.delegator);
 
         if (delegatorstate) {
@@ -935,14 +980,15 @@ module.exports = (o => {
   return o;
 })({});
 return module.exports;});
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0244_src_touchboom = f()}})(function(){var define,module,exports;module={exports:(exports={})};
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0245_src_touchboom = f()}})(function(){var define,module,exports;module={exports:(exports={})};
 // Filename: touchboom.js
-// Timestamp: 2017.11.03-11:33:04 (last modified)
+// Timestamp: 2017.11.03-12:43:20 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
-const touchboom_ctrl = touchboom_0244_src_touchboom_ctrl,
-      touchboom_key = touchboom_0244_src_touchboom_key,
-      touchboom_touchmouse = touchboom_0244_src_touchboom_touchmouse;
+const evdelegate = evdelegate_003_evdelegate,
+      touchboom_ctrl = touchboom_0245_src_touchboom_ctrl,
+      touchboom_key = touchboom_0245_src_touchboom_key,
+      touchboom_touchmouse = touchboom_0245_src_touchboom_touchmouse;
 
 module.exports = (o => {
   o.attach = (rafcfg, elem, fnobj) => {
@@ -954,6 +1000,15 @@ module.exports = (o => {
     rafcfg = touchboom_touchmouse(rafcfg, touchboom_ctrl, elem);
     rafcfg = touchboom_key(rafcfg, touchboom_ctrl, elem);
     rafcfg = touchboom_ctrl(rafcfg, elem, oneventfn, oninertiafn, onmovefn);
+
+    return rafcfg;
+  };
+
+  o.detach = (rafcfg, elem) => {
+    //    console.log('rafcfg', rafcfg );
+    rafcfg = touchboom_touchmouse.detach(rafcfg, elem);
+    rafcfg = touchboom_key.detach(rafcfg, elem);
+    rafcfg = touchboom_ctrl.detach(rafcfg);
 
     return rafcfg;
   };
@@ -977,12 +1032,12 @@ module.exports = (o => {
   return o;
 })({});
 return module.exports;});
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0244_src_touchboom_demo = f()}})(function(){var define,module,exports;module={exports:(exports={})};
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0245_src_touchboom_demo = f()}})(function(){var define,module,exports;module={exports:(exports={})};
 // Filename: touchboom.test.js
-// Timestamp: 2017.11.03-12:22:21 (last modified)
+// Timestamp: 2017.11.03-13:33:54 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
-const touchboom = touchboom_0244_src_touchboom;
+const touchboom = touchboom_0245_src_touchboom;
 
 let THREE = null;
 
@@ -1290,6 +1345,8 @@ function appendchild(parent, child) {
         paintballrender(cfg, getcentermousexy(cfg, touchboom.coordsgettotal(cfg)), canvas2Delem);
       }
     });
+
+    // touchboom.detach(cfg, rootelem);
 
     (function animate() {
       // canvasleftscene.glrenderer.render(

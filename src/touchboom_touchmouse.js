@@ -1,5 +1,5 @@
 // Filename: touchboom_touchmouse.js
-// Timestamp: 2017.11.03-11:40:07 (last modified)
+// Timestamp: 2017.11.03-13:40:44 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
 const domev = require('domev'),
@@ -200,6 +200,13 @@ module.exports = (o => {
     }
   };
 
+  o.detach = (cfg, parentelem) => {
+    // console.log('detach touchmouse', o.delegator);
+    o.delegator = evdelegate.rmelemstate(o.delegator, parentelem);
+
+    return cfg;
+  };
+
   o.connectdelegate = (cfg, touchboom_ctrl, parentelem) => {
     let { body } = document,
         ctrldel = evdelegate;
@@ -212,7 +219,7 @@ module.exports = (o => {
     if (!o.delegator) {
       o.delegator = ctrldel.create();
 
-      touchboom_ev.lsnpub({}, body, [
+      ctrldel.lsnpubarr(o.delegator, {}, body, [
         'mouseover'
       ], (cfg, e) => {
         let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e));
@@ -222,7 +229,7 @@ module.exports = (o => {
         }
       });
 
-      touchboom_ev.lsnpub({}, body, [
+      ctrldel.lsnpubarr(o.delegator, {}, body, [
         'mousedown', 'touchstart'
       ], (cfg, e) => {
         let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e)),
@@ -236,7 +243,7 @@ module.exports = (o => {
         }
       });
 
-      touchboom_ev.lsnpub({}, body, [
+      ctrldel.lsnpubarr(o.delegator, {}, body, [
         'mousemove', 'touchmove'
       ], (cfg, e) => {
         let delegatorstate = ctrldel.getactivestate(o.delegator),
@@ -254,7 +261,7 @@ module.exports = (o => {
         }
       });
 
-      touchboom_ev.lsnpub({}, body, [
+      ctrldel.lsnpubarr(o.delegator, {}, body, [
         'mouseup', 'mouseout', 'touchend'
       ], (cfg, e) => {
         let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e)),
@@ -273,7 +280,7 @@ module.exports = (o => {
         }
       });
 
-      touchboom_ev.lsnpub({}, body, [
+      ctrldel.lsnpubarr(o.delegator, {}, body, [
         'touchcancel'
       ], (cfg, e) => {
         let delegatorstate = ctrldel.getactivestate(o.delegator);

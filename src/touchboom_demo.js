@@ -1,5 +1,5 @@
 // Filename: touchboom.test.js
-// Timestamp: 2017.11.03-12:22:21 (last modified)
+// Timestamp: 2017.11.03-13:33:54 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
 const touchboom = require('./touchboom');
@@ -332,6 +332,8 @@ function appendchild (parent, child) {
         paintballrender(cfg, getcentermousexy(cfg, touchboom.coordsgettotal(cfg)), canvas2Delem);
       }
     });
+
+    // touchboom.detach(cfg, rootelem);
 
     (function animate () {
       // canvasleftscene.glrenderer.render(

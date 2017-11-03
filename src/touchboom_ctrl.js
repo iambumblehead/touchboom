@@ -1,5 +1,5 @@
 // Filename: touchboom_ctrl.js
-// Timestamp: 2017.11.03-12:25:02 (last modified)
+// Timestamp: 2017.11.03-12:38:05 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 //
 // http://ariya.github.io/kinetic/
@@ -34,6 +34,15 @@ module.exports = (o => {
     cfg.isinertia = typeof cfg.isinertia === 'boolean' ? cfg.isinertia : true;
     cfg.rafcoordidarr = [];
     cfg = o.coordsreset(cfg);
+
+    return cfg;
+  };
+
+  o.detach = cfg => {
+    cfg.publishfn = null;
+    cfg.onmovefn = null;
+    cfg.onoverfn = null;
+    cfg.rafcoordidarr = [];
 
     return cfg;
   };
