@@ -1,5 +1,5 @@
 // Filename: touchboom.js
-// Timestamp: 2017.11.03-13:41:06 (last modified)
+// Timestamp: 2017.12.16-18:54:31 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
 const touchboom_ctrl = require('./touchboom_ctrl'),
@@ -13,6 +13,9 @@ module.exports = (o => {
         oninertiafn = fnobj.oninertiafn || slugfn,
         onmovefn = fnobj.onmovefn || slugfn;
 
+    // prevent document|parent scroll when using key controls
+    rafcfg.isKeyPreventDefault = typeof rafcfg.isKeyPreventDefault === 'boolean'
+      ? rafcfg.isKeyPreventDefault : true;
     rafcfg = touchboom_touchmouse(rafcfg, touchboom_ctrl, elem);
     rafcfg = touchboom_key(rafcfg, touchboom_ctrl, elem);
     rafcfg = touchboom_ctrl(rafcfg, elem, oneventfn, oninertiafn, onmovefn);

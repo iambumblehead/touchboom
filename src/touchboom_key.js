@@ -1,5 +1,5 @@
 // Filename: touchboom_key.js
-// Timestamp: 2017.11.03-13:27:40 (last modified)
+// Timestamp: 2017.12.16-18:57:16 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
 const domev = require('domev'),
@@ -54,7 +54,6 @@ module.exports = (o => {
     -Number(dir === DIR_LEFT || dir === DIR_UP);
 
   o.keydown = (cfg, touchboom_ctrl, e) => {
-    console.log('keycode, key', e.keyCode, e.code);
     let dir = o.getdirection(cfg, e.keyCode),
         axisnum = o.getdirectionxynum(cfg, dir),
         dirnum = o.getdirectiondirnum(cfg, dir),
@@ -83,6 +82,10 @@ module.exports = (o => {
       cfg = touchboom_ev.publish(cfg, KEYSTART, e);
       touchboom_ctrl.start(cfg, e);
     }
+
+    // prevent key from scrolling parent|document
+    if (cfg.isKeyPreventDefault)
+      domev.stopDefaultAt(e);
   };
 
   o.keyup = (cfg, touchboom_ctrl, e) => {
