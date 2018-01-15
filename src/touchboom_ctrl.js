@@ -1,5 +1,5 @@
 // Filename: touchboom_ctrl.js
-// Timestamp: 2017.11.03-12:38:05 (last modified)
+// Timestamp: 2018.01.15-14:00:37 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 //
 // http://ariya.github.io/kinetic/
@@ -73,7 +73,7 @@ module.exports = (o => {
       });
     }
 
-    cfg = touchboom_ev.publish(cfg, o.events.MOVEEND);
+    cfg = touchboom_ev.publish(cfg, o.events.MOVEEND, cfg.laste);
 
     return cfg;
   };

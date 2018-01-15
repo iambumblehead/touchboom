@@ -1,9 +1,10 @@
 // Filename: touchboom_key.js
-// Timestamp: 2017.12.16-18:57:16 (last modified)
+// Timestamp: 2018.01.15-15:05:24 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
 const domev = require('domev'),
       evdelegate = require('evdelegate'),
+      nodefocusable = require('nodefocusable'),
 
       touchboom_ev = require('./touchboom_ev'),
       touchboom_ctrl = require('./touchboom_ctrl');
@@ -59,6 +60,7 @@ module.exports = (o => {
         dirnum = o.getdirectiondirnum(cfg, dir),
         coord = cfg.coords[axisnum];
 
+    e.lastkeye = e;
     if (coord && !coord.isupdatepassive) {
       if (coord.ismove) {
         coord = touchboom_ctrl.coordset(coord, {
@@ -99,7 +101,7 @@ module.exports = (o => {
       cfg.coords[axisnum] = touchboom_ctrl.coordmoveend(cfg, coord);
       touchboom_ctrl.coordsmoveend(cfg, e, coord);
 
-      cfg = touchboom_ev.publish(cfg, KEYEND, e);
+      cfg = touchboom_ev.publish(cfg, KEYEND, e || cfg.lastkeye);
     }
   };
 
@@ -139,6 +141,12 @@ module.exports = (o => {
     return cfg;
   };
 
+  o.reset = (cfg, elem) => {
+    o.delegator = evdelegate.addelemstate(o.delegator, elem, cfg);
+
+    return cfg;
+  };
+
   o.connectdelegate = (cfg, touchboom, parentelem) => {
     let { body } = document,
         ctrldel = evdelegate;
@@ -152,7 +160,8 @@ module.exports = (o => {
       o.delegator = ctrldel.create();
 
       ctrldel.lsnpubarr(o.delegator, {}, body, [ 'keydown' ], (cfg, e) => {
-        let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e));
+        let elem = domev.getElemAt(e),
+            delegatorstate = ctrldel.getelemstate(o.delegator, nodefocusable(elem));
 
         if (delegatorstate) {
           o.delegator = ctrldel.setactivestate(o.delegator, delegatorstate);

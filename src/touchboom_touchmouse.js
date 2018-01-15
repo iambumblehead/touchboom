@@ -1,9 +1,10 @@
 // Filename: touchboom_touchmouse.js
-// Timestamp: 2017.11.03-13:40:44 (last modified)
+// Timestamp: 2018.01.15-15:09:04 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
 const domev = require('domev'),
       evdelegate = require('evdelegate'),
+      nodefocusable = require('nodefocusable'),
 
       touchboom_ev = require('./touchboom_ev'),
       touchboom_ctrl = require('./touchboom_ctrl');
@@ -28,11 +29,19 @@ module.exports = (o => {
         && (Math.abs(c.offset) < TAPMOVETHRESHOLD)));
 
   // will accept xy array, click object or touch object
-  o.getevxy = e => (
-    Array.isArray(e) ?
-      e : e && typeof e.clientX === 'number'
-        ? [ e.clientX, e.clientY ]
-        : [ e.changedTouches[0].pageX, e.changedTouches[0].pageY ]);
+  o.getevxy = e => {
+    let evxy = [ 0, 0 ];
+
+    if (Array.isArray(e)) {
+      evxy = e;
+    } else if (typeof e.clientX === 'number') {
+      evxy = [ e.clientX, e.clientY ];
+    } else if (Array.isArray(e.changedTouches)) {
+      evxy = [ e.changedTouches[0].pageX, e.changedTouches[0].pageY ];
+    }
+
+    return evxy;
+  };
 
   o.getelemxy = elem => {
     let rect = elem.getBoundingClientRect(),
@@ -61,12 +70,13 @@ module.exports = (o => {
     return cfg;
   };
 
-  o.ismouseoutparent = (e, parentelem) =>
-    /mouseout/.test(e.type) && parentelem && !domev.isElem(e, parentelem);
+  o.ismouseoutparent = (e, parentelem) => (
+    /mouseout/.test(e.type) && parentelem && !domev.isElem(e, parentelem));
 
   o.start = (cfg, touchboom_ctrl, e) => {
     let evarr = o.getevxy(e);
 
+    cfg.laste = e;
     if (touchboom_ctrl.coordsismove(cfg)) {
       cfg = touchboom_ctrl.stop(cfg);
       cfg.coords = cfg.coords.map(c => (
@@ -93,6 +103,7 @@ module.exports = (o => {
   o.move = (cfg, touchboom_ctrl, e) => {
     let evarr = o.getevxy(e);
 
+    cfg.laste = e;
     cfg = touchboom_ev.publish(cfg, MOVE, e);
 
     cfg.coords = cfg.coords.map((c, i) => (
@@ -207,6 +218,12 @@ module.exports = (o => {
     return cfg;
   };
 
+  o.reset = (cfg, elem) => {
+    o.delegator = evdelegate.addelemstate(o.delegator, elem, cfg);
+
+    return cfg;
+  };
+
   o.connectdelegate = (cfg, touchboom_ctrl, parentelem) => {
     let { body } = document,
         ctrldel = evdelegate;
@@ -222,7 +239,8 @@ module.exports = (o => {
       ctrldel.lsnpubarr(o.delegator, {}, body, [
         'mouseover'
       ], (cfg, e) => {
-        let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e));
+        let elem = domev.getElemAt(e),
+            delegatorstate = ctrldel.getelemstate(o.delegator, nodefocusable(elem));
 
         if (delegatorstate) {
           o.delegator = ctrldel.setmouseoverstate(o.delegator, delegatorstate);
@@ -232,7 +250,8 @@ module.exports = (o => {
       ctrldel.lsnpubarr(o.delegator, {}, body, [
         'mousedown', 'touchstart'
       ], (cfg, e) => {
-        let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e)),
+        let elem = domev.getElemAt(e),
+            delegatorstate = ctrldel.getelemstate(o.delegator, nodefocusable(elem)),
             statemeta = delegatorstate && ctrldel.getstatemeta(delegatorstate);
 
         if (delegatorstate) {
@@ -264,11 +283,12 @@ module.exports = (o => {
       ctrldel.lsnpubarr(o.delegator, {}, body, [
         'mouseup', 'mouseout', 'touchend'
       ], (cfg, e) => {
-        let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e)),
+        let elem = domev.getElemAt(e),
+            delegatorstate = ctrldel.getelemstate(o.delegator, nodefocusable(elem)),
             statemeta = delegatorstate && ctrldel.getstatemeta(delegatorstate);
 
         if (delegatorstate) {
-          if (o.ismouseoutparent(e, ctrldel.getstateelem(statemeta))) {
+          if (o.ismouseoutparent(e, ctrldel.getstateelem(delegatorstate))) {
             return null;
           }
 
@@ -293,6 +313,23 @@ module.exports = (o => {
         }
       });
     }
+
+    document.addEventListener('mouseout', e => {
+      e = e || window.event;
+      let from = e.relatedTarget || e.toElement;
+
+      if (!from || /html/i.test(from.nodeName)) {
+        let delegatorstate = ctrldel.getactivestate(o.delegator),
+            statemeta = delegatorstate && ctrldel.getstatemeta(delegatorstate);
+
+        if (delegatorstate) {
+          evdelegate.rmactivestate(o.delegator);
+          evdelegate.rmmouseoverstate(o.delegator, delegatorstate);
+          o.movecomplete(statemeta, touchboom_ctrl, e);
+        }
+      }
+    });
+
 
     cfg = touchboom_ctrl.onmoveend(cfg, 'touchmouse', (/* cfg, type, e */) => {
       ctrldel.rmactivestate(o.delegator);

@@ -1,5 +1,5 @@
 // Filename: touchboom.js
-// Timestamp: 2017.12.16-18:54:31 (last modified)
+// Timestamp: 2018.01.15-06:15:27 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
 const touchboom_ctrl = require('./touchboom_ctrl'),
@@ -45,7 +45,12 @@ module.exports = (o => {
   o.coordsmoveend = touchboom_ctrl.coordsmoveend;
   o.coordsismove = touchboom_ctrl.coordsismove;
   o.coords = touchboom_ctrl.coords;
-  o.coordsreset = touchboom_ctrl.coordsreset;
+  o.coordsreset = (rafcfg, elem) => {
+    rafcfg = touchboom_ctrl.coordsreset(rafcfg);
+    rafcfg = touchboom_touchmouse.reset(rafcfg, elem);
+    rafcfg = touchboom_key.reset(rafcfg, elem);
+    return rafcfg;
+  };
 
   return o;
 })({});
