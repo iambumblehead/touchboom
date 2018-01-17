@@ -1,5 +1,5 @@
 // Filename: touchboom_touchmouse.js
-// Timestamp: 2018.01.15-15:09:04 (last modified)
+// Timestamp: 2018.01.17-03:40:58 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
 const domev = require('domev'),
@@ -28,6 +28,14 @@ module.exports = (o => {
         && (Date.now() - c.ismove < TAPTIMETHRESHOLD)
         && (Math.abs(c.offset) < TAPMOVETHRESHOLD)));
 
+  o.getchangedtouchxy = changedTouches => {
+    let changedTouch = changedTouches && changedTouches[0];
+
+    return changedTouch
+      ? [ changedTouch.pageX, changedTouch.pageY ]
+      : [ 0, 0 ];
+  };
+
   // will accept xy array, click object or touch object
   o.getevxy = e => {
     let evxy = [ 0, 0 ];
@@ -36,8 +44,8 @@ module.exports = (o => {
       evxy = e;
     } else if (typeof e.clientX === 'number') {
       evxy = [ e.clientX, e.clientY ];
-    } else if (Array.isArray(e.changedTouches)) {
-      evxy = [ e.changedTouches[0].pageX, e.changedTouches[0].pageY ];
+    } else if (typeof e.changedTouches === 'object') {
+      evxy = o.getchangedtouchxy( e.changedTouches );
     }
 
     return evxy;
