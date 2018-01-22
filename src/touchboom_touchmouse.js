@@ -1,5 +1,5 @@
 // Filename: touchboom_touchmouse.js
-// Timestamp: 2018.01.17-03:40:58 (last modified)
+// Timestamp: 2018.01.21-21:07:44 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
 const domev = require('domev'),
@@ -16,7 +16,7 @@ module.exports = (o => {
         TAPMOVETHRESHOLD = 10,
 
         { INTERRUPT, CANCEL, MOVE, OVER,
-          START, END, TAP, TAPTAP
+          START, END, TAP, TAPTAP, OUT
         } = touchboom_ctrl.events;
 
   o = (cfg, touchboom_ctrl, parentelem, fn) =>
@@ -137,9 +137,9 @@ module.exports = (o => {
       .coordsgettotal(cfg)
       .every(coordtotal => coordtotal < 20));
 
-  o.movecomplete = (cfg, touchboom_ctrl, e) => {
+  o.movecomplete = (cfg, touchboom_ctrl, e, evtype = END) => {
     if (!touchboom_ctrl.coordsismove(cfg)) {
-      cfg.publishfn(cfg, END, e);
+      cfg.publishfn(cfg, evtype, e);
       return touchboom_ctrl.stop(cfg);
     }
 
@@ -159,7 +159,7 @@ module.exports = (o => {
       return null;
     }
 
-    cfg.publishfn(cfg, END, e);
+    cfg.publishfn(cfg, evtype, e);
 
     cfg.coords = cfg.coords.map(c => (
       c = touchboom_ctrl.coordupdate(cfg, c),
@@ -168,6 +168,9 @@ module.exports = (o => {
 
     touchboom_ctrl.coordsmoveend(cfg, e);
   };
+
+  o.moveout = (cfg, touchboom_ctrl, e) =>
+    o.movecomplete(cfg, touchboom_ctrl, e, OUT);
 
   o.movecancel = (cfg, touchboom_ctrl, e) => {
     cfg = touchboom_ev.publish(cfg, CANCEL, e);
@@ -304,7 +307,11 @@ module.exports = (o => {
             ctrldel.rmmouseoverstate(o.delegator, delegatorstate);
           }
 
-          o.movecomplete(statemeta, touchboom_ctrl, e);
+          if (/mouseout/.test(e.type)) {
+            o.movecomplete(statemeta, touchboom_ctrl, e, OUT);
+          } else {
+            o.movecomplete(statemeta, touchboom_ctrl, e);
+          }
         }
       });
 
@@ -333,7 +340,7 @@ module.exports = (o => {
         if (delegatorstate) {
           evdelegate.rmactivestate(o.delegator);
           evdelegate.rmmouseoverstate(o.delegator, delegatorstate);
-          o.movecomplete(statemeta, touchboom_ctrl, e);
+          o.moveout(statemeta, touchboom_ctrl, e);
         }
       }
     });

@@ -1,5 +1,5 @@
 // Filename: touchboom_ctrl.js
-// Timestamp: 2018.01.15-14:00:37 (last modified)
+// Timestamp: 2018.01.21-20:41:01 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 //
 // http://ariya.github.io/kinetic/
@@ -58,6 +58,7 @@ module.exports = (o => {
     START : 'start',
     END : 'end',
     TAP : 'tap',
+    OUT : 'out', // mouse leaves area
     TAPTAP : 'taptap'
   };
 
