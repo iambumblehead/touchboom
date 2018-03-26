@@ -45,7 +45,7 @@ module.exports = (o => {
     } else if (typeof e.clientX === 'number') {
       evxy = [ e.clientX, e.clientY ];
     } else if (typeof e.changedTouches === 'object') {
-      evxy = o.getchangedtouchxy( e.changedTouches );
+      evxy = o.getchangedtouchxy(e.changedTouches);
     }
 
     return evxy;
@@ -125,6 +125,9 @@ module.exports = (o => {
     }
   };
 
+  o.publishfn = (cfg, ev, e) =>
+    cfg.publishfn && cfg.publishfn(cfg, ev, e);
+
   // taps must occur near one another, when user is not updating movement.
   //
   //  - previous touch/tap must have been released
@@ -139,18 +142,18 @@ module.exports = (o => {
 
   o.movecomplete = (cfg, touchboom_ctrl, e, evtype = END) => {
     if (!touchboom_ctrl.coordsismove(cfg)) {
-      cfg.publishfn(cfg, evtype, e);
+      o.publishfn(cfg, evtype, e);
       return touchboom_ctrl.stop(cfg);
     }
 
     if (/touchend|mouseup/.test(e.type)) {
       cfg = o.endtap(cfg, e);
       if (cfg.istap) {
-        cfg.publishfn(cfg, TAP, e);
+        o.publishfn(cfg, TAP, e);
       }
 
       if (cfg.istaptap && o.istaptapvalid(cfg)) {
-        cfg.publishfn(cfg, TAPTAP, e);
+        o.publishfn(cfg, TAPTAP, e);
       }
     }
 
@@ -159,7 +162,7 @@ module.exports = (o => {
       return null;
     }
 
-    cfg.publishfn(cfg, evtype, e);
+    o.publishfn(cfg, evtype, e);
 
     cfg.coords = cfg.coords.map(c => (
       c = touchboom_ctrl.coordupdate(cfg, c),
@@ -340,6 +343,7 @@ module.exports = (o => {
         if (delegatorstate) {
           evdelegate.rmactivestate(o.delegator);
           evdelegate.rmmouseoverstate(o.delegator, delegatorstate);
+
           o.moveout(statemeta, touchboom_ctrl, e);
         }
       }
