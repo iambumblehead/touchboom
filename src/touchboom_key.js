@@ -2,7 +2,6 @@
 // Timestamp: 2018.01.15-15:05:24 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
-import domev from 'domev'
 import evdelegate from 'evdelegate'
 import nodefocusable from 'nodefocusable'
 
@@ -87,7 +86,7 @@ export default (o => {
 
     // prevent key from scrolling parent|document
     if (cfg.isKeyPreventDefault)
-      domev.stopDefaultAt(e);
+      e.preventDefault();
   };
 
   o.keyup = (cfg, touchboom_ctrl, e) => {
@@ -148,8 +147,7 @@ export default (o => {
   };
 
   o.connectdelegate = (cfg, touchboom, parentelem) => {
-    let { body } = document,
-        ctrldel = evdelegate;
+    let { body } = document
 
     if (!parentelem || !parentelem.id) {
       console.error('parent element exist w/ valid id');
@@ -157,35 +155,35 @@ export default (o => {
     }
 
     if (!o.delegator) {
-      o.delegator = ctrldel.create();
+      o.delegator = evdelegate.create();
 
-      ctrldel.lsnpubarr(o.delegator, {}, body, [ 'keydown' ], (cfg, e) => {
-        let elem = domev.getElemAt(e),
-            delegatorstate = ctrldel.getelemstate(o.delegator, nodefocusable(elem));
+      evdelegate.lsnpubarr(o.delegator, {}, body, [ 'keydown' ], (cfg, e) => {
+        const elem = e.target;
+        const delegatorstate = evdelegate.getelemstate(
+          o.delegator, nodefocusable(elem));
 
         if (delegatorstate) {
-          o.delegator = ctrldel.setactivestate(o.delegator, delegatorstate);
-
-          o.keydown(ctrldel.getstatemeta(delegatorstate), touchboom, e);
+          o.delegator = evdelegate.setactivestate(o.delegator, delegatorstate);
+          o.keydown(evdelegate.getstatemeta(delegatorstate), touchboom, e);
         }
       });
 
-      ctrldel.lsnpubarr(o.delegator, {}, body, [ 'keyup' ], (cfg, e) => {
-        let delegatorstate = ctrldel.getactivestate(o.delegator);
+      evdelegate.lsnpubarr(o.delegator, {}, body, [ 'keyup' ], (cfg, e) => {
+        let delegatorstate = evdelegate.getactivestate(o.delegator);
 
         if (delegatorstate) {
-          o.keyup(ctrldel.getstatemeta(delegatorstate), touchboom, e);
+          o.keyup(evdelegate.getstatemeta(delegatorstate), touchboom, e);
         }
       });
     }
 
     cfg = touchboom_ctrl.onmoveend(cfg, 'key', (/* cfg, type, e */) => {
-      ctrldel.rmactivestate(o.delegator);
+      evdelegate.rmactivestate(o.delegator);
     });
 
     cfg = o.adaptkeycodere(cfg);
 
-    o.delegator = ctrldel.addelemstate(o.delegator, parentelem, cfg);
+    o.delegator = evdelegate.addelemstate(o.delegator, parentelem, cfg);
 
     return cfg;
   };

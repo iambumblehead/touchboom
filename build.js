@@ -14,6 +14,10 @@ scroungejs({
   basepagein: './docs/index.tpl.html',
   basepage: './docs/index.html',
   publicpath: '/touchboom/dist',
+  skippatharr: [
+    'three'
+    // '/three.js'
+  ],
   treearr: [
     'touchboom.js',
     'touchboom_demo.js'

@@ -3,10 +3,10 @@
 // Author(s): bumblehead <chris@bumblehead.com>
 
 import touchboom from './touchboom.js'
-
+// import * as THREE from 'three';
 let THREE = null;
 
-function gettouchboom (fn) {
+async function gettouchboom (fn) {
   let threescript = '//cdnjs.cloudflare.com/ajax/libs/three.js/87/three.min.js';
 
   (function next (arr, x = 0) {
@@ -16,7 +16,7 @@ function gettouchboom (fn) {
       : document.body.appendChild(getscriptelem(arr[x], () => next(arr, ++x)));
   }([
     (/http/.test(window.location.protocol)
-      ? window.location.protocol : 'http:') + threescript
+     ? window.location.protocol : 'http:') + threescript
   ]));
 }
 

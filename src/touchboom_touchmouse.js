@@ -2,7 +2,6 @@
 // Timestamp: 2018.01.21-21:07:44 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
-import domev from 'domev'
 import evdelegate from 'evdelegate'
 import nodefocusable from 'nodefocusable'
 
@@ -79,7 +78,8 @@ export default (o => {
   };
 
   o.ismouseoutparent = (e, parentelem) => (
-    /mouseout/.test(e.type) && parentelem && !domev.isElem(e, parentelem));
+    /mouseout/.test(e.type) && parentelem &&
+      !(e.target && parentelem.isEqualNode(e.target)))
 
   o.start = (cfg, touchboom_ctrl, e) => {
     let evarr = o.getevxy(e);
@@ -253,7 +253,7 @@ export default (o => {
       ctrldel.lsnpubarr(o.delegator, {}, body, [
         'mouseover'
       ], (cfg, e) => {
-        let elem = domev.getElemAt(e),
+        let elem = e.target,
             delegatorstate = ctrldel.getelemstate(o.delegator, nodefocusable(elem));
 
         if (delegatorstate) {
@@ -264,7 +264,7 @@ export default (o => {
       ctrldel.lsnpubarr(o.delegator, {}, body, [
         'mousedown', 'touchstart'
       ], (cfg, e) => {
-        let elem = domev.getElemAt(e),
+        let elem = e.target,
             delegatorstate = ctrldel.getelemstate(o.delegator, nodefocusable(elem)),
             statemeta = delegatorstate && ctrldel.getstatemeta(delegatorstate);
 
@@ -297,7 +297,7 @@ export default (o => {
       ctrldel.lsnpubarr(o.delegator, {}, body, [
         'mouseup', 'mouseout', 'touchend'
       ], (cfg, e) => {
-        let elem = domev.getElemAt(e),
+        let elem = e.target,
             delegatorstate = ctrldel.getelemstate(o.delegator, nodefocusable(elem)),
             statemeta = delegatorstate && ctrldel.getstatemeta(delegatorstate);
 

@@ -19,8 +19,7 @@
   "dependencies": {
     "nodefocusable": "^0.0.2",
     "evdelegate": "^0.0.4",
-    "curved": "0.0.8",
-    "domev": "0.0.8"
+    "curved": "0.0.8"
   },
   "devDependencies": {
     "scroungejs": "^1.8.7",
