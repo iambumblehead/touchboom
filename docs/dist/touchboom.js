@@ -1,128 +1,27 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.evdelegate_003_evdelegate = f()}})(function(){var define,module,exports;module={exports:(exports={})};
-// Filename: evdelegator.js
-// Timestamp: 2017.11.03-13:35:11 (last modified)
-// Author(s): bumblehead <chris@bumblehead.com>
-
-module.exports = (o => {
-  // delegator:
-  //
-  //   activestate :
-  //     [[depth, 'elemid', {state}],
-  //      [depth, 'elemid', {state}]]
-  //
-  //   statearr : [ ...statearr ]
-  //
-  o.create = () => ({
-    listenersarr: [],
-    activestate: null,
-    statearr: []
-  });
-
-  o.setmouseoverstate = (delegator, activestate) => (delegator.mouseoverstate = activestate, delegator);
-
-  o.getmouseoverstate = delegator => delegator.mouseoverstate;
-
-  o.rmmouseoverstate = delegator => (delegator.mouseoverstate = null, delegator);
-
-  o.setactivestate = (delegator, activestate) => (delegator.activestate = activestate, delegator);
-
-  o.getactivestate = delegator => delegator.activestate;
-
-  o.rmactivestate = delegator => (delegator.activestate = null, delegator);
-
-  o.getactivestatemeta = delegator => o.getstatemeta(o.getactivestate(delegator));
-
-  // state:
-  //
-  //   [[depth, 'elemid', {state}],
-  //    [depth, 'elemid', {state}]]
-  //
-  o.createstate = (depth, elemid, meta) => [depth, elemid, meta];
-
-  o.isstatesame = (statea, stateb) => o.getstateid(statea) === o.getstateid(stateb);
-
-  o.createelemstate = (elem, meta) => o.createstate(o.getelemdepth(elem), elem.id, meta);
-
-  o.getstatemeta = delegatorstate => delegatorstate && delegatorstate[2];
-
-  o.getstateid = delegatorstate => delegatorstate && delegatorstate[1];
-
-  o.getstateelem = delegatorstate => delegatorstate && document.getElementById(delegatorstate[1]);
-
-  o.haselemid = (elem, elemid, elemidelem) => Boolean(elem && (elemidelem = document.getElementById(elemid)) && (elem.isEqualNode(elemidelem) || elemidelem.contains(elem)));
-
-  o.getelemstate = (delegator, elem) => delegator.statearr.find(([, id]) => o.haselemid(elem, id));
-
-  o.getelemdepth = (elem, depth = 0) => elem.parentNode ? o.getelemdepth(elem.parentNode, ++depth) : depth;
-
-  // sorting arranges elements 'deeper' in the document to appear first
-  //
-  // for elements w/ parent/child relationship --yield child first
-  o.delegatordepthsort = ([elemadepth], [elembdepth]) => elemadepth > elembdepth ? 1 : -1;
-
-  o.addstate = (delegator, state) => (delegator.statearr = delegator.statearr.filter(stateelem => !o.isstatesame(stateelem, state)), delegator.statearr.push(state), delegator.statearr = delegator.statearr.sort(o.delegatordepthsort), delegator);
-
-  o.addelemstate = (delegator, elem, state) => {
-    if (!elem || !elem.id) {
-      console.error('parent element exist w/ valid id');
-    } else {
-      delegator = o.addstate(delegator, o.createelemstate(elem, state));
-    }
-
-    return delegator;
-  };
-
-  o.rmelemstate = (delegator, elem) => {
-    delegator.statearr = delegator.statearr.filter(stateelem => o.getstateid(stateelem) !== elem.id);
-
-    // completely removes *all* listeners associtated w/ delegator
-    delegator.listenersarr.map(([listeners, lsnfn]) => {
-      o.lsnrmarr(elem, listeners, lsnfn);
-    });
-
-    return delegator;
-  };
-
-  //
-  // convenience data
-  //
-  o.lsnarr = (elem, evarr, fn) => evarr.map(e => elem.addEventListener(e, fn));
-
-  o.lsnrmarr = (elem, evarr, fn) => evarr.map(e => elem.removeEventListener(e, fn));
-
-  o.lsnpubarr = (delegator, cfg, elem, evarr, fn) => {
-    const lsnfn = e => fn(cfg, e, fn);
-
-    delegator.listenersarr.push([evarr, lsnfn]);
-
-    o.lsnarr(elem, evarr, lsnfn);
-
-    return delegator;
-  };
-
-  return o;
-})({});
-return module.exports;});
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0245_src_touchboom_ev = f()}})(function(){var define,module,exports;module={exports:(exports={})};
 // Filename: touchboom_ev.js
 // Timestamp: 2017.11.03-11:32:20 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
-module.exports = (o => {
-  o.publish = (cfg, etype, ev) => (typeof cfg.publishfn === 'function' && cfg.publishfn(cfg, etype, ev), cfg);
+export default (o => {
+  o.publish = (cfg, etype, ev) => (
+    typeof cfg.publishfn === 'function'
+      && cfg.publishfn(cfg, etype, ev),
+    cfg);
 
-  o.lsnpub = (cfg, elem, evarr, fn) => o.lsnarr(evarr, elem, e => fn(cfg, e, fn));
+  o.lsnpub = (cfg, elem, evarr, fn) =>
+    o.lsnarr(evarr, elem, e => fn(cfg, e, fn));
 
-  o.lsnarr = (evarr, elem, fn) => evarr.map(e => elem.addEventListener(e, fn));
+  o.lsnarr = (evarr, elem, fn) =>
+    evarr.map(e => elem.addEventListener(e, fn));
 
-  o.lsnrmarr = (evarr, elem, fn) => evarr.map(e => elem.removeEventListener(e, fn));
+  o.lsnrmarr = (evarr, elem, fn) =>
+    evarr.map(e => elem.removeEventListener(e, fn));
 
   return o;
 })({});
-return module.exports;});
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.curved_007_curved = f()}})(function(){var define,module,exports;module={exports:(exports={})};
+
 // Filename: curved.js
-// Timestamp: 2016.04.03-20:25:09 (last modified)
+// Timestamp: 2017.04.26-21:35:40 (last modified)
 // Author(s): Dan Pupius (www.pupius.co.uk), Bumblehead (www.bumblehead.com)
 //
 // thanks to Daniel Pupius
@@ -151,42 +50,34 @@ return module.exports;});
 // - given values are 'shifted' into a positive axis so that curves may be
 //   generated when negative values are given.
 
-var curved = module.exports = function () {
+export default (() => {
+  const B1 = t => t * t * t,
+        B2 = t => 3 * t * t * (1 - t),
+        B3 = t => 3 * t * (1 - t) * (1 - t),
+        B4 = t => (1 - t) * (1 - t) * (1 - t),
+        
+        shift = (x1, x2, min = Math.min(x1, x2)) =>
+          min && -min;
 
-  function B1(t) {
-    return t * t * t;
-  }
-  function B2(t) {
-    return 3 * t * t * (1 - t);
-  }
-  function B3(t) {
-    return 3 * t * (1 - t) * (1 - t);
-  }
-  function B4(t) {
-    return (1 - t) * (1 - t) * (1 - t);
-  }
-
-  function getShift(x1, x2) {
-    var min = Math.min(x1, x2);
-    return min && -min;
-  }
-
-  // easeStr should be a string 'ease-end' or 'ease-bgn'
-  return function (bgnCoord, endCoord, easeStr) {
-    var shiftval = getShift(bgnCoord, endCoord),
+  // easeStr should be a string 'end' or 'bgn'
+  return (bgnCoord, endCoord, easeStr) => {
+    let shiftval = shift(bgnCoord, endCoord),
         C1 = endCoord + shiftval,
         C4 = bgnCoord + shiftval,
         C2_3 = easeStr === 'end' ? C1 : C4;
 
-    return function (per) {
-      return Math.round(C1 * B1(per) + C2_3 * B2(per) + C2_3 * B3(per) + C4 * B4(per)) - shiftval;
-    };
+    return per => 
+      Math.round(
+        C1 * B1(per) +
+        C2_3 * B2(per) +
+        C2_3 * B3(per) +
+          C4 * B4(per)
+      ) - shiftval;
   };
-}();
-return module.exports;});
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0245_src_touchboom_ctrl = f()}})(function(){var define,module,exports;module={exports:(exports={})};
+})();
+
 // Filename: touchboom_ctrl.js
-// Timestamp: 2017.11.03-12:38:05 (last modified)
+// Timestamp: 2018.01.21-20:41:01 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 //
 // http://ariya.github.io/kinetic/
@@ -206,13 +97,13 @@ return module.exports;});
 // ------------------------+
 //
 
-const touchboom_ev = touchboom_0245_src_touchboom_ev,
-      curved = curved_007_curved;
+import touchboom_ev from './touchboom_0250_src_touchboom_ev.js'
+import curved from './curved_008_curved.js'
 
-module.exports = (o => {
-  const VELOCITYTHRESHOLD = 10,
-        TIMECONST = 325,
-        INF = Infinity;
+export default (o => {
+  const VELOCITYTHRESHOLD = 10
+  const TIMECONST = 325
+  const INF = Infinity;
 
   o = (cfg, parentelem, fn, onmovefn, onoverfn) => {
     cfg.publishfn = fn;
@@ -235,20 +126,24 @@ module.exports = (o => {
   };
 
   o.events = {
-    INTERRUPT: 'interrupt',
-    CANCEL: 'cancel',
-    KEYSTART: 'keystart',
-    KEYEND: 'keyend',
-    MOVE: 'move',
-    MOVEEND: 'moveend',
-    OVER: 'over',
-    START: 'start',
-    END: 'end',
-    TAP: 'tap',
-    TAPTAP: 'taptap'
+    INTERRUPT : 'interrupt',
+    CANCEL : 'cancel',
+    KEYSTART : 'keystart',
+    KEYEND : 'keyend',
+    MOVE : 'move',
+    MOVEEND : 'moveend',
+    OVER : 'over',
+    START : 'start',
+    END : 'end',
+    TAP : 'tap',
+    OUT : 'out', // mouse leaves area
+    TAPTAP : 'taptap'
   };
 
-  o.onmoveend = (cfg, id, fn) => (cfg.onmoveendfn = cfg.onmoveendfn || {}, cfg.onmoveendfn[id] = fn, cfg);
+  o.onmoveend = (cfg, id, fn) => (
+    cfg.onmoveendfn = cfg.onmoveendfn || {},
+    cfg.onmoveendfn[id] = fn,
+    cfg);
 
   o.onmoveendfn = (cfg, type, ev) => {
     if (cfg.onmoveendfn) {
@@ -257,7 +152,7 @@ module.exports = (o => {
       });
     }
 
-    cfg = touchboom_ev.publish(cfg, o.events.MOVEEND);
+    cfg = touchboom_ev.publish(cfg, o.events.MOVEEND, cfg.laste);
 
     return cfg;
   };
@@ -271,21 +166,25 @@ module.exports = (o => {
     }
   };
 
-  o.coords = (cfgcoords = [{}, {}]) => cfgcoords.map(o.coordget);
+  o.coords = (cfgcoords = [ {}, {} ]) =>
+    cfgcoords.map(o.coordget);
 
   o.coordsreset = cfg => (
-  // initialize empty coords, two coords by default --x and y
-  cfg.coords = o.coords(cfg.coords), cfg);
+    // initialize empty coords, two coords by default --x and y
+    cfg.coords = o.coords(cfg.coords),
+    cfg);
 
-  o.isnum = n => typeof n === 'number';
+  o.isnum = n =>
+    typeof n === 'number';
 
-  o.firstnum = numarr => numarr.find(num => typeof num === 'number');
+  o.firstnum = numarr =>
+    numarr.find(num => typeof num === 'number');
 
   o.coordget = (c = {}, coorddef = {}) => {
     const now = Date.now();
 
-    c.min = o.firstnum([c.min, coorddef.min, -INF]);
-    c.max = o.firstnum([c.max, coorddef.max, INF]);
+    c.min = o.firstnum([ c.min, coorddef.min, -INF ]);
+    c.max = o.firstnum([ c.max, coorddef.max, INF ]);
 
     // allow changes outside controls to affect ismin and ismax behaviour
     c.getmin = c.getmin || ((cfg, c) => c.min);
@@ -304,7 +203,7 @@ module.exports = (o => {
     c.lastpos = +coorddef.start;
 
     if (o.isnum(c.total)) {
-      c.total = c.total;
+      // do nothing
     } else if (o.isnum(c.bgn)) {
       c.total = c.bgn;
     } else if (o.isnum(coorddef.bgn)) {
@@ -325,20 +224,35 @@ module.exports = (o => {
     return c;
   };
 
-  o.coordgetstarted = (c, start, type) => o.coordget(c, { start, type });
+  o.coordgetstarted = (c, start, type) =>
+    o.coordget(c, { start, type });
 
-  o.coordset = (c, props) => Object.assign({}, c, props);
+  o.coordset = (c, props) =>
+    Object.assign({}, c, props);
 
   // mutates cfg.coords
-  o.coordsupdatepassive = (cfg, now = Date.now()) => (cfg.coords = cfg.coords.map(c => c.isupdatepassive ? o.coordupdatepassive(cfg, c, now) : c), cfg);
+  o.coordsupdatepassive = (cfg, now = Date.now()) => (
+    cfg.coords = cfg.coords.map(c => (
+      c.isupdatepassive ? o.coordupdatepassive(cfg, c, now) : c)),
+    cfg
+  );
 
-  o.coordsgettotal = cfg => o.coordsupdatepassive(cfg).coords.map(c => c.total + c.offset);
+  o.coordsgettotal = cfg => (
+    o.coordsupdatepassive(cfg).coords.map(c => c.total + c.offset));
 
-  o.coordsismove = cfg => cfg.coords.some(c => c.ismove);
+  o.coordsismove = cfg =>
+    cfg.coords.some(c => c.ismove);
 
-  o.stop = cfg => (cfg.ticker = clearInterval(cfg.ticker), cfg);
+  o.stop = cfg => (
+    cfg.ticker = clearInterval(cfg.ticker),
+    cfg);
 
-  o.start = (cfg, e) => (cfg.rafcoordidarr = cfg.coords.map((c, i) => c.ismove || cfg.rafcoordidarr[i]), cfg.ticker = setInterval(() => o.coordsupdate(cfg), 100), o.coordsmovestart(cfg, e), cfg);
+  o.start = (cfg, e) => (
+    cfg.rafcoordidarr = cfg.coords.map((c, i) => (
+      c.ismove || cfg.rafcoordidarr[i])),
+    cfg.ticker = setInterval(() => o.coordsupdate(cfg), 100),
+    o.coordsmovestart(cfg, e),
+    cfg);
 
   o.getdeltacurve = ((maxms, curve) => {
     maxms = 1000;
@@ -347,18 +261,24 @@ module.exports = (o => {
     return (c, timestart, timenow) => {
       const timediff = (timenow - timestart) / maxms;
 
-      return (c.autoweight ? curved(c.autoweight * 0.2, c.autoweight, 'bgn') : curve)(timediff > 1 ? 1 : timediff);
+      return (c.autoweight
+        ? curved(c.autoweight * 0.2, c.autoweight, 'bgn')
+        : curve)(timediff > 1 ? 1 : timediff);
     };
   })();
 
-  o.getvelocityupdated = (offset, frame, velocity, elapsedms) => 0.4 * ( // 0.8 * (
-  1000 * ( // velocity
-  offset - frame // delta
-  ) / (1 + elapsedms)) + 0.2 * velocity;
+  o.getvelocityupdated = (offset, frame, velocity, elapsedms) => (
+    0.4 * ( // 0.8 * (
+      1000 * ( // velocity
+        offset - frame // delta
+      ) / (1 + elapsedms)) + 0.2 * velocity
+  );
 
-  o.getamplitudeupdated = (velocity, amplitude, velocitythreshold) => Math.abs(velocity) > velocitythreshold ? 0.8 * velocity : amplitude;
+  o.getamplitudeupdated = (velocity, amplitude, velocitythreshold) =>
+    Math.abs(velocity) > velocitythreshold ? 0.8 * velocity : amplitude;
 
-  o.gettargetupdated = (velocity, offset, amplitude) => Math.abs(velocity) > 10 ? Math.round(offset + amplitude) : offset;
+  o.gettargetupdated = (velocity, offset, amplitude) =>
+    Math.abs(velocity) > 10 ? Math.round(offset + amplitude) : offset;
 
   o.coordupdatepassive = (cfg, c, now = Date.now()) => {
     if (c.isupdatepassive) {
@@ -370,14 +290,17 @@ module.exports = (o => {
     return c;
   };
 
-  o.coordupdate = (cfg, c, date = Date.now()) => o.coordset(c, {
-    velocity: o.getvelocityupdated(c.offset, c.frame, c.velocity, date - c.trackts),
-    frame: c.offset,
-    trackts: date
-  });
+  o.coordupdate = (cfg, c, date = Date.now()) =>
+    o.coordset(c, {
+      velocity : o.getvelocityupdated(c.offset, c.frame, c.velocity, date - c.trackts),
+      frame : c.offset,
+      trackts : date
+    });
 
   o.coordsupdate = (cfg, now = Date.now()) => {
-    cfg.coords = cfg.coords.map(c => c.isglide ? c : o.coordupdate(cfg, c, now));
+    cfg.coords = cfg.coords.map(c => (
+      c.isglide ? c : o.coordupdate(cfg, c, now)
+    ));
 
     return cfg;
   };
@@ -388,15 +311,21 @@ module.exports = (o => {
   // 40,     20,    0,    100   => 40
   // 3,      -100,  -100, 100   => 0
   // -491,   0,     -100, 100   => -100
-  o.getoffset = (cfg, offset, cur, min, max) => offset > 0 ? cur + offset <= max ? offset : cur >= max ? 0 : max - cur : cur + offset >= min ? offset : cur <= min ? 0 : min - cur;
+  o.getoffset = (cfg, offset, cur, min, max) => (
+    offset > 0
+      ? ((cur + offset <= max)
+        ? offset : cur >= max ? 0 : max - cur)
+      : ((cur + offset >= min)
+        ? offset : cur <= min ? 0 : min - cur));
 
-  o.movecoord = (cfg, c, dist) => o.coordset(c, {
-    offset: o.getoffset(cfg, dist, c.total, c.getmin(cfg, c), c.getmax(cfg, c))
-  });
+  o.movecoord = (cfg, c, dist) =>
+    o.coordset(c, {
+      offset : o.getoffset(cfg, dist, c.total, c.getmin(cfg, c), c.getmax(cfg, c))
+    });
 
   o.movecoordauto = (cfg, c, now) => {
-    const elapsed = now - c.trackts,
-          delta = -c.amplitude * Math.exp(-elapsed / TIMECONST);
+    const elapsed = now - c.trackts;
+    const delta = -c.amplitude * Math.exp(-elapsed / TIMECONST);
 
     if (Math.abs(delta) > 0.5) {
       c = o.movecoord(cfg, c, c.target + delta);
@@ -414,11 +343,14 @@ module.exports = (o => {
     // continue moving only if an axis moved here is not begun elswhere
     // (indicated by newer/different rafcoordid)
     //
-    if (!rafcoordidarr.some((coordid, i) => coordid && coordid === cfg.rafcoordidarr[i])) {
+    if (!rafcoordidarr.some((coordid, i) => (
+      coordid && coordid === cfg.rafcoordidarr[i]
+    ))) {
       return 'automove cancelled' && null;
     }
 
-    cfg.coords = cfg.coords.map(c => c.isglide ? c = o.movecoordauto(cfg, c, now) : c);
+    cfg.coords = cfg.coords.map(c => (
+      c.isglide ? c = o.movecoordauto(cfg, c, now) : c));
 
     if (o.coordsismove(cfg)) {
       requestAnimationFrame(() => {
@@ -455,9 +387,11 @@ module.exports = (o => {
     if (Math.abs(c.velocity) > VELOCITYTHRESHOLD) {
       c.trackts = now;
 
-      c.amplitude = o.getamplitudeupdated(c.velocity, c.amplitude, VELOCITYTHRESHOLD);
+      c.amplitude = o.getamplitudeupdated(
+        c.velocity, c.amplitude, VELOCITYTHRESHOLD);
 
-      c.target = o.gettargetupdated(c.velocity, c.offset, c.amplitude, c.target);
+      c.target = o.gettargetupdated(
+        c.velocity, c.offset, c.amplitude, c.target);
 
       c.isglide = Date.now();
     } else {
@@ -467,13 +401,14 @@ module.exports = (o => {
     return c;
   };
 
-  o.coordsmovestart = (cfg, e) => requestAnimationFrame(() => {
-    if (cfg.ticker) {
-      // ticker is active while dragging
-      o.coordsmovestart(cfg, e);
-      o.onmovefn(cfg, e);
-    }
-  });
+  o.coordsmovestart = (cfg, e) =>
+    requestAnimationFrame(() => {
+      if (cfg.ticker) {
+        // ticker is active while dragging
+        o.coordsmovestart(cfg, e);
+        o.onmovefn(cfg, e);
+      }
+    });
 
   o.coordsmoveend = (cfg, e) => {
     cfg = o.stop(cfg);
@@ -488,87 +423,230 @@ module.exports = (o => {
 
   return o;
 })({});
-return module.exports;});
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.domev_007_domev = f()}})(function(){var define,module,exports;module={exports:(exports={})};
-// Filename: domev.js
-// Timestamp: 2016.11.07-12:14:20 (last modified)
-// Author(s): Bumblehead (www.bumblehead.com)
 
-var domev = module.exports = {
-
-  getElemAt: function (e) {
-    var fn = function () {};
-    if (typeof e === 'object' && e) {
-      if ('target' in e) {
-        fn = function (ev) {
-          return ev.target;
-        };
-      } else if ('srcElement' in e) {
-        fn = function (ev) {
-          return ev.srcElement;
-        };
-      }
+const getElemAt = (e, fn = ev => null) => {
+  if (typeof e === 'object' && e) {
+    if ('srcElement' in e) {
+      fn = ev => ev.srcElement;        
+    } else if ('target' in e) {
+      fn = ev => ev.target;
     }
-    return (domev.getElemAt = fn)(e);
-  },
-
-  getparentlinkelemat: function (e) {
-    var elem = this.getElemAt(e);
-
-    return elem && function getparentlink(elem) {
-      return elem && elem.tagName && (elem.tagName.match(/^a/i) ? elem : getparentlink(elem.parentNode));
-    }(elem);
-  },
-
-  stopDefaultAt: function (e) {
-    var fn = function () {};
-    if (typeof e === 'object' && e) {
-      if (e.preventDefault) {
-        fn = function (ev) {
-          return ev.preventDefault();
-        };
-      } else {
-        fn = function (ev) {
-          return ev.returnValue = false;
-        };
-      }
-    }
-    return (domev.stopDefaultAt = fn)(e);
-  },
-
-  isElem: function (e, elem, evelem) {
-    evelem = this.getElemAt(e, elem);
-
-    return elem && evelem && elem.isEqualNode(evelem);
-  },
-
-  hasElem: function (e, elem, evelem) {
-    evelem = this.getElemAt(e, elem);
-
-    return elem && evelem && (elem.isEqualNode(evelem) || elem.contains(evelem));
   }
+
+  return fn
 };
-return module.exports;});
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0245_src_touchboom_key = f()}})(function(){var define,module,exports;module={exports:(exports={})};
-// Filename: touchboom_key.js
-// Timestamp: 2017.11.03-13:27:40 (last modified)
+
+const stopDefaultAt = (e, fn = ev => null) => {
+  if (typeof e === 'object' && e) {
+    if (typeof e.preventDefault) {
+      fn = ev => (ev.preventDefault());
+    } else {
+      fn = ev => (ev.returnValue = false);
+    }
+  }
+  
+  return fn(e);
+};
+
+const getparentlinkelemat = (e, elem = getElemAt(e)) => (
+  elem && (function getparentlink (elem) {
+    return (elem && elem.tagName) && (
+      /^a/i.test(elem.tagName)
+        ? elem : getparentlink(elem.parentNode));
+  }(elem)));
+
+const isElem = (e, elem, evelem = getElemAt(e, elem)) => (
+  elem && evelem && elem.isEqualNode(evelem));
+
+const hasElem = (e, elem, evelem = getElemAt(e, elem)) => (
+  elem && evelem && (elem.isEqualNode(evelem) ||
+                     elem.contains(evelem)));
+
+export default {
+  getElemAt,
+  stopDefaultAt,
+  getparentlinkelemat,
+  isElem,
+  hasElem
+}
+
+// Filename: evdelegator.js
+// Timestamp: 2017.11.03-13:35:11 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
-const domev = domev_007_domev,
-      evdelegate = evdelegate_003_evdelegate,
-      touchboom_ev = touchboom_0245_src_touchboom_ev,
-      touchboom_ctrl = touchboom_0245_src_touchboom_ctrl;
+export default (o => {
+  // delegator:
+  //
+  //   activestate :
+  //     [[depth, 'elemid', {state}],
+  //      [depth, 'elemid', {state}]]
+  //
+  //   statearr : [ ...statearr ]
+  //
+  o.create = () => ({
+    listenersarr : [],
+    activestate : null,
+    statearr : []
+  });
 
-module.exports = (o => {
-  const DIR_LEFT = 'DIR_LEFT',
-        DIR_RIGHT = 'DIR_RIGHT',
-        DIR_DOWN = 'DIR_DOWN',
-        DIR_UP = 'DIR_UP',
-        { INTERRUPT,
+  o.setmouseoverstate = (delegator, activestate) => (
+    delegator.mouseoverstate = activestate,
+    delegator);
+
+  o.getmouseoverstate = delegator =>
+    delegator.mouseoverstate;
+
+  o.rmmouseoverstate = delegator => (
+    delegator.mouseoverstate = null,
+    delegator);
+
+  o.setactivestate = (delegator, activestate) => (
+    delegator.activestate = activestate,
+    delegator);
+
+  o.getactivestate = delegator =>
+    delegator.activestate;
+
+  o.rmactivestate = delegator => (
+    delegator.activestate = null,
+    delegator);
+
+  o.getactivestatemeta = delegator =>
+    o.getstatemeta(o.getactivestate(delegator));
+
+  // state:
+  //
+  //   [[depth, 'elemid', {state}],
+  //    [depth, 'elemid', {state}]]
+  //
+  o.createstate = (depth, elemid, meta) => (
+    [ depth, elemid, meta ]);
+
+  o.isstatesame = (statea, stateb) =>
+    o.getstateid(statea) === o.getstateid(stateb);
+
+  o.createelemstate = (elem, meta) => (
+    o.createstate(o.getelemdepth(elem), elem.id, meta));
+
+  o.getstatemeta = delegatorstate =>
+    delegatorstate && delegatorstate[2];
+
+  o.getstateid = delegatorstate =>
+    delegatorstate && delegatorstate[1];
+
+  o.getstateelem = delegatorstate =>
+    delegatorstate && document.getElementById(delegatorstate[1]);
+
+  o.haselemid = (elem, elemid, elemidelem) =>
+    Boolean(elem && (elemidelem = document.getElementById(elemid)) &&
+            (elem.isEqualNode(elemidelem) || elemidelem.contains(elem)));
+
+  o.getelemstate = (delegator, elem) =>
+    delegator.statearr.find(([ , id ]) => (
+      o.haselemid(elem, id)));
+
+  o.getelemdepth = (elem, depth = 0) => (
+    elem.parentNode
+      ? o.getelemdepth(elem.parentNode, ++depth)
+      : depth);
+
+  // sorting arranges elements 'deeper' in the document to appear first
+  //
+  // for elements w/ parent/child relationship --yield child first
+  o.delegatordepthsort = ([ elemadepth ], [ elembdepth ]) =>
+    elemadepth > elembdepth ? 1 : -1;
+
+  o.addstate = (delegator, state) => (
+    delegator.statearr = delegator.statearr
+      .filter(stateelem => !o.isstatesame(stateelem, state)),
+    delegator.statearr.push(state),
+    delegator.statearr = delegator.statearr.sort(o.delegatordepthsort),
+    delegator);
+
+  o.addelemstate = (delegator, elem, state) => {
+    if (!elem || !elem.id) {
+      console.error('parent element exist w/ valid id');
+    } else {
+      delegator = o.addstate(delegator, o.createelemstate(elem, state));
+    }
+
+    return delegator;
+  };
+
+  o.rmelemstate = (delegator, elem) => {
+    delegator.statearr = delegator.statearr
+      .filter(stateelem => o.getstateid(stateelem) !== elem.id);
+
+    // completely removes *all* listeners associtated w/ delegator
+    delegator.listenersarr.map(([ listeners, lsnfn ]) => {
+      o.lsnrmarr(elem, listeners, lsnfn);
+    });
+
+    return delegator;
+  };
+
+  //
+  // convenience data
+  //
+  o.lsnarr = (elem, evarr, fn) =>
+    evarr.map(e => elem.addEventListener(e, fn));
+
+  o.lsnrmarr = (elem, evarr, fn) =>
+    evarr.map(e => elem.removeEventListener(e, fn));
+
+  o.lsnpubarr = (delegator, cfg, elem, evarr, fn) => {
+    const lsnfn = e => fn(cfg, e, fn);
+
+    delegator.listenersarr.push([ evarr, lsnfn ]);
+
+    o.lsnarr(elem, evarr, lsnfn);
+
+    return delegator;
+  };
+
+  return o;
+})({});
+
+// Filename: nodefocusable.js  
+// Timestamp: 2017.09.20-06:59:18 (last modified)
+// Author(s): bumblehead <chris@bumblehead.com>  
+
+const focusableNameRe = /^(button|input|select|textarea)$/
+
+const is = elem => Boolean(elem instanceof Element && (
+  focusableNameRe.test(elem.nodeName) ||
+    elem.hasAttribute('href') || (
+      elem.hasAttribute('tabindex') &&
+        !/-1/.test(elem.getAttribute('tabindex')))));
+
+const getfocusableparent = elem => elem && (
+  is(elem) ? elem : getfocusableparent(elem.parentNode))
+
+export default Object.assign(getfocusableparent, { is })
+
+// Filename: touchboom_key.js
+// Timestamp: 2018.01.15-15:05:24 (last modified)
+// Author(s): bumblehead <chris@bumblehead.com>
+
+import domev from './domev_008_domev.js'
+import evdelegate from './evdelegate_004_evdelegate.js'
+import nodefocusable from './nodefocusable_002_nodefocusable.js'
+
+import touchboom_ev from './touchboom_0250_src_touchboom_ev.js'
+import touchboom_ctrl from './touchboom_0250_src_touchboom_ctrl.js'
+
+export default (o => {
+  const DIR_LEFT = 'DIR_LEFT';
+  const DIR_RIGHT = 'DIR_RIGHT';
+  const DIR_DOWN = 'DIR_DOWN';
+  const DIR_UP = 'DIR_UP';
+  const {
+    INTERRUPT,
     KEYSTART, KEYEND
   } = touchboom_ctrl.events;
 
-  o = (cfg, parentelem, fn) => o.connectdelegate(cfg, parentelem, fn);
+  o = (cfg, parentelem, fn) =>
+    o.connectdelegate(cfg, parentelem, fn);
 
   o.events = {
     DIR_LEFT, DIR_RIGHT, DIR_DOWN, DIR_UP
@@ -577,31 +655,43 @@ module.exports = (o => {
   o.getdirection = (cfg, keyCode) => {
     let dir = null;
 
-    if (typeof keyCode !== 'number') throw new Error('keyCode must be a number');else if (cfg.iskeyupre.test(keyCode)) dir = DIR_UP;else if (cfg.iskeyleftre.test(keyCode)) dir = DIR_LEFT;else if (cfg.iskeydownre.test(keyCode)) dir = DIR_DOWN;else if (cfg.iskeyrightre.test(keyCode)) dir = DIR_RIGHT;
+    if (typeof keyCode !== 'number')
+      throw new Error('keyCode must be a number');
+    else if (cfg.iskeyupre.test(keyCode))
+      dir = DIR_UP;
+    else if (cfg.iskeyleftre.test(keyCode))
+      dir = DIR_LEFT;
+    else if (cfg.iskeydownre.test(keyCode))
+      dir = DIR_DOWN;
+    else if (cfg.iskeyrightre.test(keyCode))
+      dir = DIR_RIGHT;
 
     return dir;
   };
 
   // LEFT OR RIGHT, X: 0
   // UP or DOWN,    Y: 1
-  o.getdirectionxynum = (cfg, dir) => Number(dir === DIR_DOWN || dir === DIR_UP);
+  o.getdirectionxynum = (cfg, dir) =>
+    Number(dir === DIR_DOWN || dir === DIR_UP);
 
   // LEFT OR DOWN: -1
   // UP or RIGHT:  +1
-  o.getdirectiondirnum = (cfg, dir) => Number(dir === DIR_RIGHT || dir === DIR_DOWN) || -Number(dir === DIR_LEFT || dir === DIR_UP);
+  o.getdirectiondirnum = (cfg, dir) =>
+    Number(dir === DIR_RIGHT || dir === DIR_DOWN) ||
+    -Number(dir === DIR_LEFT || dir === DIR_UP);
 
   o.keydown = (cfg, touchboom_ctrl, e) => {
-    console.log('keycode, key', e.keyCode, e.code);
     let dir = o.getdirection(cfg, e.keyCode),
         axisnum = o.getdirectionxynum(cfg, dir),
         dirnum = o.getdirectiondirnum(cfg, dir),
         coord = cfg.coords[axisnum];
 
+    e.lastkeye = e;
     if (coord && !coord.isupdatepassive) {
       if (coord.ismove) {
         coord = touchboom_ctrl.coordset(coord, {
-          total: coord.total + coord.offset,
-          offset: 0
+          total : coord.total + coord.offset,
+          offset : 0
         });
 
         cfg.coords[axisnum] = coord;
@@ -609,9 +699,9 @@ module.exports = (o => {
       }
       coord.isupdatepassive = true;
       coord = touchboom_ctrl.coordget(coord, {
-        ismove: Date.now(),
-        start: 0,
-        type: 'key'
+        ismove : Date.now(),
+        start : 0,
+        type : 'key'
       });
       coord.lastdelta = 0;
       coord.dir = dirnum;
@@ -620,6 +710,10 @@ module.exports = (o => {
       cfg = touchboom_ev.publish(cfg, KEYSTART, e);
       touchboom_ctrl.start(cfg, e);
     }
+
+    // prevent key from scrolling parent|document
+    if (cfg.isKeyPreventDefault)
+      domev.stopDefaultAt(e);
   };
 
   o.keyup = (cfg, touchboom_ctrl, e) => {
@@ -633,22 +727,32 @@ module.exports = (o => {
       cfg.coords[axisnum] = touchboom_ctrl.coordmoveend(cfg, coord);
       touchboom_ctrl.coordsmoveend(cfg, e, coord);
 
-      cfg = touchboom_ev.publish(cfg, KEYEND, e);
+      cfg = touchboom_ev.publish(cfg, KEYEND, e || cfg.lastkeye);
     }
   };
 
-  o.getkeycodearrre = keycodearr => new RegExp(keycodearr.join('|'));
+  o.getkeycodearrre = keycodearr =>
+    new RegExp(keycodearr.join('|'));
 
-  o.adaptkeycodere = cfg => (cfg.iskeyupre = o.getkeycodearrre(cfg.keycodeuparr || [38, 87]), cfg.iskeyleftre = o.getkeycodearrre(cfg.keycodeleftarr || [37, 65]), cfg.iskeyrightre = o.getkeycodearrre(cfg.keycoderightarr || [39, 68]), cfg.iskeydownre = o.getkeycodearrre(cfg.keycodedownarr || [40, 83]), cfg);
+  o.adaptkeycodere = cfg => (
+    cfg.iskeyupre = o.getkeycodearrre(
+      cfg.keycodeuparr || [ 38, 87 ]),
+    cfg.iskeyleftre = o.getkeycodearrre(
+      cfg.keycodeleftarr || [ 37, 65 ]),
+    cfg.iskeyrightre = o.getkeycodearrre(
+      cfg.keycoderightarr || [ 39, 68 ]),
+    cfg.iskeydownre = o.getkeycodearrre(
+      cfg.keycodedownarr || [ 40, 83 ]),
+    cfg);
 
   o.connect = (cfg, touchboom, parentelem) => {
     cfg = o.adaptkeycodere(cfg);
 
-    touchboom_ev.lsnpub(cfg, parentelem, ['keydown'], (cfg, e) => {
+    touchboom_ev.lsnpub(cfg, parentelem, [ 'keydown' ], (cfg, e) => {
       o.keydown(cfg, touchboom, e);
     });
 
-    touchboom_ev.lsnpub(cfg, parentelem, ['keyup'], (cfg, e) => {
+    touchboom_ev.lsnpub(cfg, parentelem, [ 'keyup' ], (cfg, e) => {
       o.keyup(cfg, touchboom, e);
     });
 
@@ -659,6 +763,12 @@ module.exports = (o => {
 
   o.detach = (cfg, parentelem) => {
     o.delegator = evdelegate.rmelemstate(o.delegator, parentelem);
+
+    return cfg;
+  };
+
+  o.reset = (cfg, elem) => {
+    o.delegator = evdelegate.addelemstate(o.delegator, elem, cfg);
 
     return cfg;
   };
@@ -675,8 +785,9 @@ module.exports = (o => {
     if (!o.delegator) {
       o.delegator = ctrldel.create();
 
-      ctrldel.lsnpubarr(o.delegator, {}, body, ['keydown'], (cfg, e) => {
-        let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e));
+      ctrldel.lsnpubarr(o.delegator, {}, body, [ 'keydown' ], (cfg, e) => {
+        let elem = domev.getElemAt(e),
+            delegatorstate = ctrldel.getelemstate(o.delegator, nodefocusable(elem));
 
         if (delegatorstate) {
           o.delegator = ctrldel.setactivestate(o.delegator, delegatorstate);
@@ -685,7 +796,7 @@ module.exports = (o => {
         }
       });
 
-      ctrldel.lsnpubarr(o.delegator, {}, body, ['keyup'], (cfg, e) => {
+      ctrldel.lsnpubarr(o.delegator, {}, body, [ 'keyup' ], (cfg, e) => {
         let delegatorstate = ctrldel.getactivestate(o.delegator);
 
         if (delegatorstate) {
@@ -694,7 +805,7 @@ module.exports = (o => {
       });
     }
 
-    cfg = touchboom_ctrl.onmoveend(cfg, 'key', () => /* cfg, type, e */{
+    cfg = touchboom_ctrl.onmoveend(cfg, 'key', (/* cfg, type, e */) => {
       ctrldel.rmactivestate(o.delegator);
     });
 
@@ -707,39 +818,69 @@ module.exports = (o => {
 
   return o;
 })({});
-return module.exports;});
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0245_src_touchboom_touchmouse = f()}})(function(){var define,module,exports;module={exports:(exports={})};
+
 // Filename: touchboom_touchmouse.js
-// Timestamp: 2017.11.03-13:27:09 (last modified)
+// Timestamp: 2018.01.21-21:07:44 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
-const domev = domev_007_domev,
-      evdelegate = evdelegate_003_evdelegate,
-      touchboom_ev = touchboom_0245_src_touchboom_ev,
-      touchboom_ctrl = touchboom_0245_src_touchboom_ctrl;
+import domev from './domev_008_domev.js'
+import evdelegate from './evdelegate_004_evdelegate.js'
+import nodefocusable from './nodefocusable_002_nodefocusable.js'
 
-module.exports = (o => {
-  const TYPE = 'touchmouse',
-        TAPTIMETHRESHOLD = 200,
-        TAPTAPTIMETHRESHOLD = 200,
-        TAPMOVETHRESHOLD = 10,
-        { INTERRUPT, CANCEL, MOVE, OVER,
-    START, END, TAP, TAPTAP
+import touchboom_ev from './touchboom_0250_src_touchboom_ev.js'
+import touchboom_ctrl from './touchboom_0250_src_touchboom_ctrl.js'
+
+export default (o => {
+  const TYPE = 'touchmouse';
+  const TAPTIMETHRESHOLD = 200;
+  const TAPTAPTIMETHRESHOLD = 200;
+  const TAPMOVETHRESHOLD = 10;
+  const {
+    INTERRUPT, CANCEL, MOVE, OVER,
+    START, END, TAP, TAPTAP, OUT
   } = touchboom_ctrl.events;
 
-  o = (cfg, touchboom_ctrl, parentelem, fn) => o.connectdelegate(cfg, touchboom_ctrl, parentelem, fn);
+  o = (cfg, touchboom_ctrl, parentelem, fn) =>
+    o.connectdelegate(cfg, touchboom_ctrl, parentelem, fn);
 
-  o.istapev = cfg => cfg.coords.some(c => c.ismove && Date.now() - c.ismove < TAPTIMETHRESHOLD && Math.abs(c.offset) < TAPMOVETHRESHOLD);
+  o.istapev = cfg =>
+    cfg.coords.some(c => (
+      c.ismove
+        && (Date.now() - c.ismove < TAPTIMETHRESHOLD)
+        && (Math.abs(c.offset) < TAPMOVETHRESHOLD)));
+
+  o.getchangedtouchxy = changedTouches => {
+    let changedTouch = changedTouches && changedTouches[0];
+
+    return changedTouch
+      ? [ changedTouch.pageX, changedTouch.pageY ]
+      : [ 0, 0 ];
+  };
 
   // will accept xy array, click object or touch object
-  o.getevxy = e => Array.isArray(e) ? e : e && typeof e.clientX === 'number' ? [e.clientX, e.clientY] : [e.changedTouches[0].pageX, e.changedTouches[0].pageY];
+  o.getevxy = e => {
+    let evxy = [ 0, 0 ];
+
+    if (Array.isArray(e)) {
+      evxy = e;
+    } else if (typeof e.clientX === 'number') {
+      evxy = [ e.clientX, e.clientY ];
+    } else if (typeof e.changedTouches === 'object') {
+      evxy = o.getchangedtouchxy(e.changedTouches);
+    }
+
+    return evxy;
+  };
 
   o.getelemxy = elem => {
     let rect = elem.getBoundingClientRect(),
         docelem = document.documentElement,
         win = window;
 
-    return [rect.left + (win.pageXOffset || docelem.scrollLeft), rect.top + (win.pageYOffset || docelem.scrollTop)];
+    return [
+      rect.left + (win.pageXOffset || docelem.scrollLeft),
+      rect.top + (win.pageYOffset || docelem.scrollTop)
+    ];
   };
 
   o.getevxyrelativeelem = (e, elem) => {
@@ -750,23 +891,28 @@ module.exports = (o => {
 
   o.endtap = (cfg, e, now = Date.now()) => {
     cfg.istap = o.istapev(cfg, e);
-    cfg.istaptap = cfg.tapts && cfg.istap && now - cfg.tapts < TAPTAPTIMETHRESHOLD;
+    cfg.istaptap = cfg.tapts
+      && cfg.istap
+      && now - cfg.tapts < TAPTAPTIMETHRESHOLD;
     cfg.tapts = cfg.istap && now;
 
     return cfg;
   };
 
-  o.ismouseoutparent = (e, parentelem) => /mouseout/.test(e.type) && parentelem && !domev.isElem(e, parentelem);
+  o.ismouseoutparent = (e, parentelem) => (
+    /mouseout/.test(e.type) && parentelem && !domev.isElem(e, parentelem));
 
   o.start = (cfg, touchboom_ctrl, e) => {
     let evarr = o.getevxy(e);
 
+    cfg.laste = e;
     if (touchboom_ctrl.coordsismove(cfg)) {
       cfg = touchboom_ctrl.stop(cfg);
-      cfg.coords = cfg.coords.map(c => touchboom_ctrl.coordset(c, {
-        total: c.total + c.offset,
-        offset: 0
-      }));
+      cfg.coords = cfg.coords.map(c => (
+        touchboom_ctrl.coordset(c, {
+          total : c.total + c.offset,
+          offset : 0
+        })));
 
       cfg = touchboom_ev.publish(cfg, INTERRUPT, e);
     }
@@ -774,9 +920,9 @@ module.exports = (o => {
     cfg.istap = false;
     cfg.istaptap = false;
     cfg.coords = cfg.coords.map((c, i) => touchboom_ctrl.coordget(c, {
-      ismove: true,
-      start: evarr[i],
-      type: TYPE
+      ismove : true,
+      start : evarr[i],
+      type : TYPE
     }));
 
     cfg = touchboom_ev.publish(cfg, START, e);
@@ -786,9 +932,12 @@ module.exports = (o => {
   o.move = (cfg, touchboom_ctrl, e) => {
     let evarr = o.getevxy(e);
 
+    cfg.laste = e;
     cfg = touchboom_ev.publish(cfg, MOVE, e);
 
-    cfg.coords = cfg.coords.map((c, i) => c.type === TYPE && c.ismove && !c.isglide ? touchboom_ctrl.updatecoord(cfg, c, evarr[i]) : c);
+    cfg.coords = cfg.coords.map((c, i) => (
+      c.type === TYPE && (c.ismove && !c.isglide)
+        ? touchboom_ctrl.updatecoord(cfg, c, evarr[i]) : c));
   };
 
   o.over = (cfg, touchboom_ctrl, e) => {
@@ -797,64 +946,79 @@ module.exports = (o => {
     }
   };
 
+  o.publishfn = (cfg, ev, e) =>
+    cfg.publishfn && cfg.publishfn(cfg, ev, e);
+
   // taps must occur near one another, when user is not updating movement.
   //
   //  - previous touch/tap must have been released
   //  - must be not-moving OR if moving must be gliding (user disengaged)
   //
   // prevents multiple, separated -touch/click
-  o.istaptapvalid = cfg => cfg.coords.every(c => !c.ismove || c.isglide) && touchboom_ctrl.coordsgettotal(cfg).every(coordtotal => coordtotal < 20);
+  o.istaptapvalid = cfg =>
+    cfg.coords.every(c => !c.ismove || c.isglide) &&
+    (touchboom_ctrl
+      .coordsgettotal(cfg)
+      .every(coordtotal => coordtotal < 20));
 
-  o.movecomplete = (cfg, touchboom_ctrl, e) => {
+  o.movecomplete = (cfg, touchboom_ctrl, e, evtype = END) => {
     if (!touchboom_ctrl.coordsismove(cfg)) {
-      cfg.publishfn(cfg, END, e);
+      o.publishfn(cfg, evtype, e);
       return touchboom_ctrl.stop(cfg);
     }
 
     if (/touchend|mouseup/.test(e.type)) {
       cfg = o.endtap(cfg, e);
       if (cfg.istap) {
-        cfg.publishfn(cfg, TAP, e);
+        o.publishfn(cfg, TAP, e);
       }
 
       if (cfg.istaptap && o.istaptapvalid(cfg)) {
-        cfg.publishfn(cfg, TAPTAP, e);
+        o.publishfn(cfg, TAPTAP, e);
       }
     }
 
-    if (e.type === 'mouseout' && cfg.coords.some(c => c.isglide)) {
+    if (e.type === 'mouseout' &&
+        cfg.coords.some(c => c.isglide)) {
       return null;
     }
 
-    cfg.publishfn(cfg, END, e);
+    o.publishfn(cfg, evtype, e);
 
-    cfg.coords = cfg.coords.map(c => (c = touchboom_ctrl.coordupdate(cfg, c), c = touchboom_ctrl.coordmoveend(cfg, c), c));
+    cfg.coords = cfg.coords.map(c => (
+      c = touchboom_ctrl.coordupdate(cfg, c),
+      c = touchboom_ctrl.coordmoveend(cfg, c),
+      c));
 
     touchboom_ctrl.coordsmoveend(cfg, e);
   };
 
+  o.moveout = (cfg, touchboom_ctrl, e) =>
+    o.movecomplete(cfg, touchboom_ctrl, e, OUT);
+
   o.movecancel = (cfg, touchboom_ctrl, e) => {
     cfg = touchboom_ev.publish(cfg, CANCEL, e);
 
-    cfg.coords = cfg.coords && cfg.coords.map(c => touchboom_ctrl.coordset(c, {
-      offset: 0
-    }));
+    cfg.coords = cfg.coords && cfg.coords.map(c => (
+      touchboom_ctrl.coordset(c, {
+        offset : 0
+      })));
 
     cfg = touchboom_ctrl.stop(cfg);
   };
 
   o.connect = (cfg, touchboom_ctrl, parentelem) => {
-    touchboom_ev.lsnpub(cfg, parentelem, ['mousedown', 'touchstart'], (cfg, e) => {
+    touchboom_ev.lsnpub(cfg, parentelem, [ 'mousedown', 'touchstart' ], (cfg, e) => {
       e.preventDefault();
 
       o.start(cfg, touchboom_ctrl, e);
     });
 
-    touchboom_ev.lsnpub(cfg, parentelem, ['mousemove', 'touchmove'], (cfg, e) => {
+    touchboom_ev.lsnpub(cfg, parentelem, [ 'mousemove', 'touchmove' ], (cfg, e) => {
       o.move(cfg, touchboom_ctrl, e);
     });
 
-    touchboom_ev.lsnpub(cfg, parentelem, ['mouseup', 'mouseout', 'touchend'], (cfg, e) => {
+    touchboom_ev.lsnpub(cfg, parentelem, [ 'mouseup', 'mouseout', 'touchend' ], (cfg, e) => {
       if (o.ismouseoutparent(e, parentelem)) {
         return null;
       }
@@ -862,7 +1026,7 @@ module.exports = (o => {
       o.movecomplete(cfg, touchboom_ctrl, e);
     });
 
-    touchboom_ev.lsnpub(cfg, parentelem, ['touchcancel'], (cfg, e) => {
+    touchboom_ev.lsnpub(cfg, parentelem, [ 'touchcancel' ], (cfg, e) => {
       o.movecancel(cfg, touchboom_ctrl, e);
     });
 
@@ -889,6 +1053,12 @@ module.exports = (o => {
     return cfg;
   };
 
+  o.reset = (cfg, elem) => {
+    o.delegator = evdelegate.addelemstate(o.delegator, elem, cfg);
+
+    return cfg;
+  };
+
   o.connectdelegate = (cfg, touchboom_ctrl, parentelem) => {
     let { body } = document,
         ctrldel = evdelegate;
@@ -901,18 +1071,22 @@ module.exports = (o => {
     if (!o.delegator) {
       o.delegator = ctrldel.create();
 
-      // removing 
-      //touchboom_ev.lsnpub({}, body, [
-      ctrldel.lsnpubarr(o.delegator, {}, body, ['mouseover'], (cfg, e) => {
-        let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e));
+      ctrldel.lsnpubarr(o.delegator, {}, body, [
+        'mouseover'
+      ], (cfg, e) => {
+        let elem = domev.getElemAt(e),
+            delegatorstate = ctrldel.getelemstate(o.delegator, nodefocusable(elem));
 
         if (delegatorstate) {
           o.delegator = ctrldel.setmouseoverstate(o.delegator, delegatorstate);
         }
       });
 
-      ctrldel.lsnpubarr(o.delegator, {}, body, ['mousedown', 'touchstart'], (cfg, e) => {
-        let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e)),
+      ctrldel.lsnpubarr(o.delegator, {}, body, [
+        'mousedown', 'touchstart'
+      ], (cfg, e) => {
+        let elem = domev.getElemAt(e),
+            delegatorstate = ctrldel.getelemstate(o.delegator, nodefocusable(elem)),
             statemeta = delegatorstate && ctrldel.getstatemeta(delegatorstate);
 
         if (delegatorstate) {
@@ -923,7 +1097,9 @@ module.exports = (o => {
         }
       });
 
-      ctrldel.lsnpubarr(o.delegator, {}, body, ['mousemove', 'touchmove'], (cfg, e) => {
+      ctrldel.lsnpubarr(o.delegator, {}, body, [
+        'mousemove', 'touchmove'
+      ], (cfg, e) => {
         let delegatorstate = ctrldel.getactivestate(o.delegator),
             mouseoverstate = ctrldel.getmouseoverstate(o.delegator),
             statemeta;
@@ -939,12 +1115,15 @@ module.exports = (o => {
         }
       });
 
-      ctrldel.lsnpubarr(o.delegator, {}, body, ['mouseup', 'mouseout', 'touchend'], (cfg, e) => {
-        let delegatorstate = ctrldel.getelemstate(o.delegator, domev.getElemAt(e)),
+      ctrldel.lsnpubarr(o.delegator, {}, body, [
+        'mouseup', 'mouseout', 'touchend'
+      ], (cfg, e) => {
+        let elem = domev.getElemAt(e),
+            delegatorstate = ctrldel.getelemstate(o.delegator, nodefocusable(elem)),
             statemeta = delegatorstate && ctrldel.getstatemeta(delegatorstate);
 
         if (delegatorstate) {
-          if (o.ismouseoutparent(e, ctrldel.getstateelem(statemeta))) {
+          if (o.ismouseoutparent(e, ctrldel.getstateelem(delegatorstate))) {
             return null;
           }
 
@@ -952,11 +1131,17 @@ module.exports = (o => {
             ctrldel.rmmouseoverstate(o.delegator, delegatorstate);
           }
 
-          o.movecomplete(statemeta, touchboom_ctrl, e);
+          if (/mouseout/.test(e.type)) {
+            o.movecomplete(statemeta, touchboom_ctrl, e, OUT);
+          } else {
+            o.movecomplete(statemeta, touchboom_ctrl, e);
+          }
         }
       });
 
-      ctrldel.lsnpubarr(o.delegator, {}, body, ['touchcancel'], (cfg, e) => {
+      ctrldel.lsnpubarr(o.delegator, {}, body, [
+        'touchcancel'
+      ], (cfg, e) => {
         let delegatorstate = ctrldel.getactivestate(o.delegator);
 
         if (delegatorstate) {
@@ -968,7 +1153,25 @@ module.exports = (o => {
       });
     }
 
-    cfg = touchboom_ctrl.onmoveend(cfg, 'touchmouse', () => /* cfg, type, e */{
+    document.addEventListener('mouseout', e => {
+      e = e || window.event;
+      let from = e.relatedTarget || e.toElement;
+
+      if (!from || /html/i.test(from.nodeName)) {
+        let delegatorstate = ctrldel.getactivestate(o.delegator),
+            statemeta = delegatorstate && ctrldel.getstatemeta(delegatorstate);
+
+        if (delegatorstate) {
+          evdelegate.rmactivestate(o.delegator);
+          evdelegate.rmmouseoverstate(o.delegator, delegatorstate);
+
+          o.moveout(statemeta, touchboom_ctrl, e);
+        }
+      }
+    });
+
+
+    cfg = touchboom_ctrl.onmoveend(cfg, 'touchmouse', (/* cfg, type, e */) => {
       ctrldel.rmactivestate(o.delegator);
     });
 
@@ -979,24 +1182,25 @@ module.exports = (o => {
 
   return o;
 })({});
-return module.exports;});
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.touchboom_0245_src_touchboom = f()}})(function(){var define,module,exports;module={exports:(exports={})};
+
 // Filename: touchboom.js
-// Timestamp: 2017.11.03-12:43:20 (last modified)
+// Timestamp: 2018.01.15-06:15:27 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
-const evdelegate = evdelegate_003_evdelegate,
-      touchboom_ctrl = touchboom_0245_src_touchboom_ctrl,
-      touchboom_key = touchboom_0245_src_touchboom_key,
-      touchboom_touchmouse = touchboom_0245_src_touchboom_touchmouse;
+import touchboom_ctrl from './touchboom_0250_src_touchboom_ctrl.js'
+import touchboom_key from './touchboom_0250_src_touchboom_key.js'
+import touchboom_touchmouse from './touchboom_0250_src_touchboom_touchmouse.js'
 
-module.exports = (o => {
+export default (o => {
   o.attach = (rafcfg, elem, fnobj) => {
     let slugfn = () => {},
         oneventfn = fnobj.oneventfn || slugfn,
         oninertiafn = fnobj.oninertiafn || slugfn,
         onmovefn = fnobj.onmovefn || slugfn;
 
+    // prevent document|parent scroll when using key controls
+    rafcfg.isKeyPreventDefault = typeof rafcfg.isKeyPreventDefault === 'boolean'
+      ? rafcfg.isKeyPreventDefault : true;
     rafcfg = touchboom_touchmouse(rafcfg, touchboom_ctrl, elem);
     rafcfg = touchboom_key(rafcfg, touchboom_ctrl, elem);
     rafcfg = touchboom_ctrl(rafcfg, elem, oneventfn, oninertiafn, onmovefn);
@@ -1005,7 +1209,6 @@ module.exports = (o => {
   };
 
   o.detach = (rafcfg, elem) => {
-    //    console.log('rafcfg', rafcfg );
     rafcfg = touchboom_touchmouse.detach(rafcfg, elem);
     rafcfg = touchboom_key.detach(rafcfg, elem);
     rafcfg = touchboom_ctrl.detach(rafcfg);
@@ -1027,8 +1230,12 @@ module.exports = (o => {
   o.coordsmoveend = touchboom_ctrl.coordsmoveend;
   o.coordsismove = touchboom_ctrl.coordsismove;
   o.coords = touchboom_ctrl.coords;
-  o.coordsreset = touchboom_ctrl.coordsreset;
+  o.coordsreset = (rafcfg, elem) => {
+    rafcfg = touchboom_ctrl.coordsreset(rafcfg);
+    rafcfg = touchboom_touchmouse.reset(rafcfg, elem);
+    rafcfg = touchboom_key.reset(rafcfg, elem);
+    return rafcfg;
+  };
 
   return o;
 })({});
-return module.exports;});

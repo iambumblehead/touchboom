@@ -4,14 +4,17 @@
 import scroungejs from 'scroungejs'
 
 scroungejs({
-  iscompressed : false,
-  isconcatenated : true,
-  inputpath : './src/',
-  outputpath : './docs/dist/',
-  basepagein : './docs/index.tpl.html',
-  basepage : './docs/index.html',
-  publicpath : '/touchboom/dist',
-  treearr : [
+  metaurl: import.meta.url,
+  version: process.env.npm_package_version,
+  isbrowser: true,
+  iscompress: false,
+  isconcat: false,
+  inputpath: './src/',
+  outputpath: './docs/dist/',
+  basepagein: './docs/index.tpl.html',
+  basepage: './docs/index.html',
+  publicpath: '/touchboom/dist',
+  treearr: [
     'touchboom.js',
     'touchboom_demo.js'
   ]
