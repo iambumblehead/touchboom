@@ -30,9 +30,8 @@
     "eslint-plugin-markdown": "^3.0.0"
   },
   "scripts": {
-    "lint": "eslint 'src/*.js'",
-    "start": "node build.js && node express.js",
-    "build": "./node_modules/babel-cli/bin/babel.js --presets env -d dist/ src/touchboom.js"
+    "lint": "eslint .",
+    "start": "node build.js && node express.js"
   },
   "keywords": [
     "inertia",

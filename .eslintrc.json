@@ -3,6 +3,7 @@
     "eslint:recommended",
     "plugin:markdown/recommended"
   ],
+  "ignorePatterns": ["docs"],
   "env": {
     "node": true
   },
