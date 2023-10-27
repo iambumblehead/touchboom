@@ -2,7 +2,7 @@
 // Timestamp: 2017.11.03-11:32:20 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
-module.exports = (o => {
+export default (o => {
   o.publish = (cfg, etype, ev) => (
     typeof cfg.publishfn === 'function'
       && cfg.publishfn(cfg, etype, ev),

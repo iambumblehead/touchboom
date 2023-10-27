@@ -2,14 +2,13 @@
 // Timestamp: 2018.01.21-21:07:44 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
-const domev = require('domev');
-const evdelegate = require('evdelegate');
-const nodefocusable = require('nodefocusable');
+import evdelegate from 'evdelegate'
+import nodefocusable from 'nodefocusable'
 
-const touchboom_ev = require('./touchboom_ev');
-const touchboom_ctrl = require('./touchboom_ctrl');
+import touchboom_ev from './touchboom_ev.js'
+import touchboom_ctrl from './touchboom_ctrl.js'
 
-module.exports = (o => {
+export default (o => {
   const TYPE = 'touchmouse';
   const TAPTIMETHRESHOLD = 200;
   const TAPTAPTIMETHRESHOLD = 200;
@@ -79,7 +78,8 @@ module.exports = (o => {
   };
 
   o.ismouseoutparent = (e, parentelem) => (
-    /mouseout/.test(e.type) && parentelem && !domev.isElem(e, parentelem));
+    /mouseout/.test(e.type) && parentelem &&
+      !(e.target && parentelem.isEqualNode(e.target)))
 
   o.start = (cfg, touchboom_ctrl, e) => {
     let evarr = o.getevxy(e);
@@ -253,7 +253,7 @@ module.exports = (o => {
       ctrldel.lsnpubarr(o.delegator, {}, body, [
         'mouseover'
       ], (cfg, e) => {
-        let elem = domev.getElemAt(e),
+        let elem = e.target,
             delegatorstate = ctrldel.getelemstate(o.delegator, nodefocusable(elem));
 
         if (delegatorstate) {
@@ -264,7 +264,7 @@ module.exports = (o => {
       ctrldel.lsnpubarr(o.delegator, {}, body, [
         'mousedown', 'touchstart'
       ], (cfg, e) => {
-        let elem = domev.getElemAt(e),
+        let elem = e.target,
             delegatorstate = ctrldel.getelemstate(o.delegator, nodefocusable(elem)),
             statemeta = delegatorstate && ctrldel.getstatemeta(delegatorstate);
 
@@ -297,7 +297,7 @@ module.exports = (o => {
       ctrldel.lsnpubarr(o.delegator, {}, body, [
         'mouseup', 'mouseout', 'touchend'
       ], (cfg, e) => {
-        let elem = domev.getElemAt(e),
+        let elem = e.target,
             delegatorstate = ctrldel.getelemstate(o.delegator, nodefocusable(elem)),
             statemeta = delegatorstate && ctrldel.getstatemeta(delegatorstate);
 

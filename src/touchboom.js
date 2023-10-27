@@ -2,11 +2,11 @@
 // Timestamp: 2018.01.15-06:15:27 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
-const touchboom_ctrl = require('./touchboom_ctrl');
-const touchboom_key = require('./touchboom_key');
-const touchboom_touchmouse = require('./touchboom_touchmouse');
+import touchboom_ctrl from './touchboom_ctrl.js'
+import touchboom_key from './touchboom_key.js'
+import touchboom_touchmouse from './touchboom_touchmouse.js'
 
-module.exports = (o => {
+export default (o => {
   o.attach = (rafcfg, elem, fnobj) => {
     let slugfn = () => {},
         oneventfn = fnobj.oneventfn || slugfn,
