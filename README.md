@@ -2,7 +2,7 @@ touchboom
 =========
 [MIT-license](#license)
 
-[![touchboom](https://github.com/iambumblehead/touchboom/raw/master/docs/img/touchboom.png)][10]
+[![touchboom](https://github.com/iambumblehead/touchboom/raw/main/docs/img/touchboom.png)][10]
 
 Reports inertial movement and key/touch/mouse events from the document. A reworking of the [motion scripts found here][7], courtesy of Ariya Hidayat.
 
@@ -70,12 +70,12 @@ touchboom.attach(cfg, rootelem, {
 
 [0]: http://www.bumblehead.com                            "bumblehead"
 [7]: https://github.com/ariya/kinetic/                       "kinetic"
-[8]: https://github.com/iambumblehead/touchboom/blob/master/docs/index.js "test page"
+[8]: https://github.com/iambumblehead/touchboom/blob/main/docs/index.js "test page"
 [9]: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode#Browser_compatibility
 [10]: https://iambumblehead.github.io/touchboom/
 
 
-![scrounge](https://github.com/iambumblehead/scroungejs/raw/master/img/hand.png)
+![scrounge](https://github.com/iambumblehead/scroungejs/raw/main/img/hand.png)
 
 
 (The MIT License)

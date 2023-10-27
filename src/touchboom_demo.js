@@ -218,7 +218,7 @@ function appendchild (parent, child) {
   return child;
 }
 
-(function start (cfg) {
+(function (cfg) {
   let rootelem = getrootelem(),
       windowwh = getwindowwh(),
       windowhalfwh = getwindowhalfwh(),

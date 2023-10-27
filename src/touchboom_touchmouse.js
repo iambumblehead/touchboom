@@ -2,22 +2,22 @@
 // Timestamp: 2018.01.21-21:07:44 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
-const domev = require('domev'),
-      evdelegate = require('evdelegate'),
-      nodefocusable = require('nodefocusable'),
+const domev = require('domev');
+const evdelegate = require('evdelegate');
+const nodefocusable = require('nodefocusable');
 
-      touchboom_ev = require('./touchboom_ev'),
-      touchboom_ctrl = require('./touchboom_ctrl');
+const touchboom_ev = require('./touchboom_ev');
+const touchboom_ctrl = require('./touchboom_ctrl');
 
 module.exports = (o => {
-  const TYPE = 'touchmouse',
-        TAPTIMETHRESHOLD = 200,
-        TAPTAPTIMETHRESHOLD = 200,
-        TAPMOVETHRESHOLD = 10,
-
-        { INTERRUPT, CANCEL, MOVE, OVER,
-          START, END, TAP, TAPTAP, OUT
-        } = touchboom_ctrl.events;
+  const TYPE = 'touchmouse';
+  const TAPTIMETHRESHOLD = 200;
+  const TAPTAPTIMETHRESHOLD = 200;
+  const TAPMOVETHRESHOLD = 10;
+  const {
+    INTERRUPT, CANCEL, MOVE, OVER,
+    START, END, TAP, TAPTAP, OUT
+  } = touchboom_ctrl.events;
 
   o = (cfg, touchboom_ctrl, parentelem, fn) =>
     o.connectdelegate(cfg, touchboom_ctrl, parentelem, fn);
