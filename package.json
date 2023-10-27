@@ -10,10 +10,10 @@
     "url": "git+https://github.com/iambumblehead/touchboom.git"
   },
   "dependencies": {
-    "nodefocusable": "^0.0.1",
-    "evdelegate": "^0.0.3",
-    "curved": "0.0.7",
-    "domev": "0.0.7"
+    "nodefocusable": "^0.0.2",
+    "evdelegate": "^0.0.4",
+    "curved": "0.0.8",
+    "domev": "0.0.8"
   },
   "devDependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
