@@ -2,9 +2,9 @@
 // Timestamp: 2018.01.15-06:15:27 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
-const touchboom_ctrl = require('./touchboom_ctrl'),
-      touchboom_key = require('./touchboom_key'),
-      touchboom_touchmouse = require('./touchboom_touchmouse');
+const touchboom_ctrl = require('./touchboom_ctrl');
+const touchboom_key = require('./touchboom_key');
+const touchboom_touchmouse = require('./touchboom_touchmouse');
 
 module.exports = (o => {
   o.attach = (rafcfg, elem, fnobj) => {

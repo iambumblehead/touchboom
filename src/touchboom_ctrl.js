@@ -19,13 +19,13 @@
 // ------------------------+
 //
 
-const touchboom_ev = require('./touchboom_ev'),
-      curved = require('curved');
+const touchboom_ev = require('./touchboom_ev');
+const curved = require('curved');
 
 module.exports = (o => {
-  const VELOCITYTHRESHOLD = 10,
-        TIMECONST = 325,
-        INF = Infinity;
+  const VELOCITYTHRESHOLD = 10
+  const TIMECONST = 325
+  const INF = Infinity;
 
   o = (cfg, parentelem, fn, onmovefn, onoverfn) => {
     cfg.publishfn = fn;
@@ -125,7 +125,7 @@ module.exports = (o => {
     c.lastpos = +coorddef.start;
 
     if (o.isnum(c.total)) {
-      c.total = c.total;
+      // do nothing
     } else if (o.isnum(c.bgn)) {
       c.total = c.bgn;
     } else if (o.isnum(coorddef.bgn)) {
@@ -246,8 +246,8 @@ module.exports = (o => {
     });
 
   o.movecoordauto = (cfg, c, now) => {
-    const elapsed = now - c.trackts,
-          delta = -c.amplitude * Math.exp(-elapsed / TIMECONST);
+    const elapsed = now - c.trackts;
+    const delta = -c.amplitude * Math.exp(-elapsed / TIMECONST);
 
     if (Math.abs(delta) > 0.5) {
       c = o.movecoord(cfg, c, c.target + delta);
