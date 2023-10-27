@@ -14,7 +14,11 @@
     "import": "./src/touchboom.js"
   },
   "files": [
-    "src"
+    "src/touchboom.js",
+    "src/touchboom_ctrl.js",
+    "src/touchboom_ev.js",
+    "src/touchboom_key.js",
+    "src/touchboom_touchmouse.js"
   ],
   "dependencies": {
     "nodefocusable": "^0.0.2",
