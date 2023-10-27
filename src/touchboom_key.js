@@ -2,14 +2,14 @@
 // Timestamp: 2018.01.15-15:05:24 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
-const domev = require('domev');
-const evdelegate = require('evdelegate');
-const nodefocusable = require('nodefocusable');
+import domev from 'domev'
+import evdelegate from 'evdelegate'
+import nodefocusable from 'nodefocusable'
 
-const touchboom_ev = require('./touchboom_ev');
-const touchboom_ctrl = require('./touchboom_ctrl');
+import touchboom_ev from './touchboom_ev.js'
+import touchboom_ctrl from './touchboom_ctrl.js'
 
-module.exports = (o => {
+export default (o => {
   const DIR_LEFT = 'DIR_LEFT';
   const DIR_RIGHT = 'DIR_RIGHT';
   const DIR_DOWN = 'DIR_DOWN';

@@ -2,14 +2,14 @@
 // Timestamp: 2018.01.21-21:07:44 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
-const domev = require('domev');
-const evdelegate = require('evdelegate');
-const nodefocusable = require('nodefocusable');
+import domev from 'domev'
+import evdelegate from 'evdelegate'
+import nodefocusable from 'nodefocusable'
 
-const touchboom_ev = require('./touchboom_ev');
-const touchboom_ctrl = require('./touchboom_ctrl');
+import touchboom_ev from './touchboom_ev.js'
+import touchboom_ctrl from './touchboom_ctrl.js'
 
-module.exports = (o => {
+export default (o => {
   const TYPE = 'touchmouse';
   const TAPTIMETHRESHOLD = 200;
   const TAPTAPTIMETHRESHOLD = 200;

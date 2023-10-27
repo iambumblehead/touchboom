@@ -19,10 +19,10 @@
 // ------------------------+
 //
 
-const touchboom_ev = require('./touchboom_ev');
-const curved = require('curved');
+import touchboom_ev from './touchboom_ev.js'
+import curved from 'curved'
 
-module.exports = (o => {
+export default (o => {
   const VELOCITYTHRESHOLD = 10
   const TIMECONST = 325
   const INF = Infinity;

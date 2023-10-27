@@ -2,7 +2,7 @@
 // Timestamp: 2017.11.03-13:33:54 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
-const touchboom = require('./touchboom');
+import touchboom from './touchboom.js'
 
 let THREE = null;
 
