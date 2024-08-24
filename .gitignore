@@ -5,3 +5,4 @@ npm-debug.log
 .scrounge
 test/src
 package-lock.json
+docs/dist
