@@ -2,9 +2,9 @@
 // Timestamp: 2018.01.15-06:15:27 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
-import touchboom_ctrl from './touchboom_0250_src_touchboom_ctrl.js'
-import touchboom_key from './touchboom_0250_src_touchboom_key.js'
-import touchboom_touchmouse from './touchboom_0250_src_touchboom_touchmouse.js'
+import touchboom_ctrl from './touchboom_0252_src_touchboom_ctrl.js'
+import touchboom_key from './touchboom_0252_src_touchboom_key.js'
+import touchboom_touchmouse from './touchboom_0252_src_touchboom_touchmouse.js'
 
 export default (o => {
   o.attach = (rafcfg, elem, fnobj) => {

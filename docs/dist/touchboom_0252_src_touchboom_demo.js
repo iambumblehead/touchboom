@@ -2,7 +2,7 @@
 // Timestamp: 2017.11.03-13:33:54 (last modified)
 // Author(s): bumblehead <chris@bumblehead.com>
 
-import touchboom from './touchboom_0250_src_touchboom.js'
+import touchboom from './touchboom_0252_src_touchboom.js'
 // import * as THREE from 'three';
 let THREE = null;
 
