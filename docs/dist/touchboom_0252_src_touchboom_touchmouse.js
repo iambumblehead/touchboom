@@ -5,8 +5,8 @@
 import evdelegate from './evdelegate_004_evdelegate.js'
 import nodefocusable from './nodefocusable_002_nodefocusable.js'
 
-import touchboom_ev from './touchboom_0250_src_touchboom_ev.js'
-import touchboom_ctrl from './touchboom_0250_src_touchboom_ctrl.js'
+import touchboom_ev from './touchboom_0252_src_touchboom_ev.js'
+import touchboom_ctrl from './touchboom_0252_src_touchboom_ctrl.js'
 
 export default (o => {
   const TYPE = 'touchmouse';
