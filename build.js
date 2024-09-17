@@ -20,6 +20,7 @@ scroungejs({
   ],
   treearr: [
     'touchboom.js',
-    'touchboom_demo.js'
+    'touchboom_demo.js',
+    'touchboom_demo.css'
   ]
 })
